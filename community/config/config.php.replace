@@ -1,0 +1,19 @@
+<?php
+$config["esoTalk.installed"] = true;
+$config["esoTalk.version"] = '1.0.0g3';
+$config["esoTalk.database.host"] = '';
+$config["esoTalk.database.user"] = '';
+$config["esoTalk.database.password"] = '';
+$config["esoTalk.database.dbName"] = '';
+$config["esoTalk.database.prefix"] = 'et_';
+$config["esoTalk.forumTitle"] = 'Polycode Community Forum';
+$config["esoTalk.baseURL"] = 'http://beta.polycode.org/community/';
+$config["esoTalk.emailFrom"] = 'do_not_reply@beta.polycode.org';
+$config["esoTalk.cookie.name"] = 'Polycode_Community_Forum';
+$config["esoTalk.urls.friendly"] = true;
+$config["esoTalk.urls.rewrite"] = true;
+$config["BBCode.version"] = '1.0.0g3';
+$config["ReportBug.version"] = '1.0.0g3';
+$config["esoTalk.admin.lastUpdateCheckTime"] = 1394277468;
+$config["esoTalk.admin.welcomeShown"] = true;
+?>

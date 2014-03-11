@@ -1,0 +1,22 @@
+<div class="page-header">
+        <h2>Scenes and entities.</h2>
+</div>
+<p class="lead">Polycode uses a scene graph system for all of its internal rendering. Scenes and entities are the base components of this scene graph.
+<h4>Scenes overview.</h4>
+<p>All rendering in Polycode happens via Scenes. A Scene is at its most basic, a container for the root entity and a camera defining how the scene is rendered. Scenes can be instantiated as 2D or 3D, which defines the initial default camera settings for the scene (you can change the camera settings at any time after that or render via different cameras). You can have any number of scenes rendering at the same time. For example, you can use a 3D Scene to render a game and a 2D Scene on top of it to render the UI. Scenes are managed internally by the SceneManager.</p>
+<h4>Entities overview.</h4>
+<p>Entities are the base of all positional and renderable objects in Polycode. They contain transform information, render and update code as well as various entity properties, such as id's and tags. They can contain other entities and form complex hierarchies. There is a single <i>root</i> contained in every Scene and all entities added to that scene are children of its root entity.</p>
+<h4>Creating a scene.</h4>
+<p>There are three types of scenes that you can create, each one defining the default camera options and coordinate system of the scene. Though you can change the camera options or switch to another camera at any point.</p>
+<p><b>SCENE_3D</b> - Perspective camera, Y-up coordinate system. Use this setting for all 3D scenes.</p> 
+<p><b>SCENE_2D</b> - Orthographic camera, Y-up coordinate system with 0,0 coordinate in the middle of the screen. The orthographic mode of the camera is set to lock height at 1.0 and adjust the width based on the aspect ratio (see <a href="">ORTHO_SIZE_LOCK_HEIGHT mode</a> below). Use this setting for resolution-independent 2D scenes.</p> 
+<p><b>SCENE_2D_TOPLEFT</b> - Orthographic camera, Y-down coordinate system with 0,0 coordinate in the top left corner of the screen. The orthographic mode of the camera is set to match the orthographic size to current resolution (see <a href="">ORTHO_SIZE_VIEWPORT mode</a> below). Use this setting for resolution-dependent UI scenes.</p>
+<p>To create a new scene, simply instantiate a Scene class and pass it the type of Scene you want to create. It will be automatically added to the SceneManager and will begin rendering to the front buffer on every render call.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Scene *scene = new Scene(Scene::SCENE_3D);
+</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">scene = Scene(Scene.SCENE_3D)
+</code></pre>
+<h4>Adding entities to the scene.</h4>
+<h4>Scene cameras.</h4>

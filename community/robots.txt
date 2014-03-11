@@ -1,0 +1,6 @@
+User-agent: *
+Crawl-delay: 10
+Disallow: /search/
+Disallow: /members/
+Disallow: /user/
+Disallow: /conversation/start/

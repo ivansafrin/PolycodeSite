@@ -1,0 +1,11 @@
+Options +FollowSymlinks
+RewriteEngine on
+
+RewriteRule ^(learn/index.php) - [L]
+RewriteRule ^learn/([^/]+) /learn/index.php?article=$1 [NC]
+RewriteRule ^learn/([^/]+) /learn/index.php?article=$1 [NC]
+
+RewriteRule ^(index.php) - [L]
+RewriteRule ^(css) - [L]
+RewriteRule ^(img) - [L]
+RewriteRule ^(docs/lua) - [L]
