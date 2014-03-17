@@ -40,7 +40,6 @@
 	  <div class="row">
 		<div><img src="/images/feature_ide_big.png" width="100%"/></div>
 		<div>
-			<div class="centerh"><h4 class="fh3">C++, Lua and Polycode IDE.</h4></div>
 			<p>Polycode is distributed as a C++ library in tandem with a standalone IDE. You can...</p>
 			<ul>
 				<li>Use Polycode as a C++ framework and ignore the IDE entirely.</li>
@@ -49,6 +48,7 @@
 			</ul>
 			<p>If you write all your code in Lua, you can export your application to any of the supported platforms directly from the IDE.</p>
 			<p>The IDE lets you create and edit Polycode material files, scenes, sprites and Lua and shader scripts.</p>
+			<p>The Polycode IDE is written completely in Polycode and uses the Polycode UI module for all of its UI.</p>
 		</div>
 	  </div>
 	</div>
@@ -110,6 +110,50 @@
 	  </div>
 	</div>
 	</div>
+
+	<div class="feat feat_3">
+	<div class="container">
+	  <div class="row">
+		<div class="col-md-8">
+			<h3 class="fh3">Networking.</h3>
+			<p>UDP-based peer-to-peer or server-client networking system with reliable packet support (currently C++ only).</p>
+		</div>
+		<div class="col-md-4">
+			<img src="/images/feature_networking.svg" height="120px"/>
+		</div>
+	  </div>
+	</div>
+	</div>
+
+	<div class="feat feat_4">
+	<div class="container">
+	<div class="centerh"><h2 class="fh3">UI.</h2></div>
+
+	  <div class="row">
+		<div style="margin-bottom: 30px"><img src="/images/feature_ui.svg" width="100%"/></div>
+		<div>
+			<p>Polycode comes with a UI module that includes buttons, checkboxes, slides, color pickers, file dialogs, scroll bars, text input, menus and windows. It's fully skinnable and comes with light and dark default themes which include a high-reslution retina-ready version.</p>
+		</div>
+	  </div>
+
+	</div>
+	</div>
+
+	<div class="feat feat_1">
+	<div class="container">
+	  <div class="row">
+		<div class="col-md-8">
+			<h3 class="fh3">2D and 3D Physics and collision.</h3>
+			<p>Polycode comes with a 3D physics module that integrates the Bullet physics engine with Polycode's scene graph system for automatic physics simulation and collision detection, character controller and vehicle simulation.</p>
+			<p>Polycode also includes a 2D physics module which integrates Box2D with its scene graph for automatic 2D physics simulation and collision detection.</p>
+		</div>
+		<div class="col-md-4">
+			<img src="/images/feature_physics.svg" height="120px"/>
+		</div>
+	  </div>
+	</div>
+	</div>
+
 
 	<div class="container">
 <?
