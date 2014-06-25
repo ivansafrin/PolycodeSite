@@ -1,17 +1,80 @@
 <div class="page-header">
-<h2>Materials and lights.</h2>
+<h2>Materials and shaders.</h2>
 </div>
 <p class="lead">Polycode provides a material system that lets you create and assign shader-based materials to meshes. You can create materials visually in the Polycode IDE or directly in code. Polycode includes a number of default materials you can use.</p>
 <h4>Contents</h4>
 <ul>
-	<li><a href="#assigning">Assigning materials in the IDE.</a></li>
-	<li><a href="#assigning_code">Assigning materials in code.</a></li>
+	<li><a href="#ide">Assigning and using materials in the IDE.</a></li>
+	<li><a href="#assigning">Assigning materials in code.</a></li>
 	<li><a href="#params">Passing parameters to materials.</a></li>
-	<li><a href="#lights">Creating and using lights.</a></li>
+	<li><a href="#creating_ide">Creating your own materials in the IDE.</a></li>
 	<li><a href="#creating">Creating your own materials.</a></li>
 </ul>
-<h4 id="assigning">Assigning materials in the IDE.</h4>
+<h4 id="ide">Assigning and using materials in the IDE.</h4>
 <p>Polycode includes a number of default materials included in default.pak that we can assign out of the box.</p>
+<img class="limg_l" width="292" src="/learn/images/material_prop.png">
 <p>To assign a material in the IDE entity editor, select the entity you want to assign the material to (it has to be a SceneMesh or a SceneMesh subclass like ScenePrimitive or SceneLabel) and click on the "Change" button in the material property sheet.
-This will open the material browser.</p>
-
+This will open the material browser and allow you to select the new material. The material browser displays the materials arranged by resource pools (see Resource management and Entity Instances for details).</p>
+<img class="limg_r" width="282" src="/learn/images/material_options.png">
+<p>After a material is selected, you will see its options displayed below the material property sheet. In these options, you can assign textures used by the material and change shader unifroms (controllable proprties of the shader).</p>
+<p>If the material already defines its own textures and properties, you will see them here and can override them per each individual assignment.</p>
+<h4 id="assigning">Assigning materials in code.</h4>
+<p>You can assign materials in code to any SceneMesh subclass. You can either assign a material by name or by a direct reference to a material resource. If we assign materials by name, we need to specify a resource pool (see Resource management) to get search for the material in. All default materials are loaded into the global resource pool.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Scene *scene = new Scene(Scene::SCENE_2D);
+ScenePrimitive *box = new ScenePrimitive(ScenePrimitive::TYPE_VPLANE, 0.5, 0.5);
+ResourcePool *globalPool = Services()->getResourceManager()->getGlobalPool();
+box->setMaterialByName("Default", globalPool);
+scene->addChild(box);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">scene = Scene(Scene.SCENE_2D)
+box = ScenePrimitive(ScenePrimitive.TYPE_VPLANE, 0.5, 0.5)
+globalPool = Services.ResourceManager:getGlobalPool()
+box:setMaterialByName("Default", globalPool)
+scene:addChild(box)</code></pre>
+<p>Note that materials which require lighting will show up black unless lights are added to the scene.</p>
+<p>Alternatively, you can request a material manually from a resource pool and assign it directly.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Material *material = (Material*)globalPool->getResource(Resource::RESOURCE_MATERIAL, "Default");
+box->setMaterial(material);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">material = globalPool:getResource(Resource.RESOURCE_MATERIAL, "Default")
+box:setMaterial(material)</code></pre>
+<h4 id="params">Passing parameters to materials.</h4>
+<p>You can set textures and uniform properties to applied materials at runtime. There are two sets of options for materials, one applied to the material itself and shared across all of the instances of the material and one specific to the material binding of each SceneMesh. This allows you to control material properties globally for each material and set properties of the material for each individual binding.</p>
+<p>Most of the time, you want to control the properties for each individual binding. This is done using the ShaderBinding class member of SceneMesh, accessible via the <b>getLocalShaderOptions</b> method. A ShaderBinding contains a list of textures and uniforms that are applied to the material shaders as uniforms. When a material is assigned to a SceneMesh, its local shader options are blank, effectively using the ShaderBinding settings of the material. If you add parameters or textures to the local shader binding, they will override the same settings in the global material.</p>
+<p>Parameteres can be of different types, depending on the shader's uniform types, but they all share the same class <b>LocalShaderParam</b>. Depending on the type of parameter, the correct method must be used to set the parameter data. Here's a list of all supported parameter types, their GLSL uniform type equivalents and data set and get methods.</p>
+<p><b>ProgramParam::PARAM_NUMBER - float - setNumber - getNumber</b></p>
+<p><b>ProgramParam::PARAM_VECTOR2 - vec2 - setVector2 - getVector2</b></p>
+<p><b>ProgramParam::PARAM_VECTOR3 - vec3 - setVector3 - getVector3</b></p>
+<p><b>ProgramParam::PARAM_COLOR - vec4 - setColor - getColor</b></p>
+<p><b>ProgramParam::PARAM_MATRIX - mat4 - setMatrix4 - getMatrix4</b></p>
+<p>Here is an example of setting the diffuse_color uniform. This uniform is of type PARAM_COLOR.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">ShaderBinding *binding = box->getLocalShaderOptions();
+LocalShaderParam *param = binding->addParam(ProgramParam::PARAM_COLOR, "diffuse_color");
+param->setColor(Color(1.0, 0.0, 0.0, 1.0));</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">binding = box:getLocalShaderOptions()
+param = binding:addParam(ProgramParam.PARAM_COLOR, "diffuse_color")
+param:setColor(Color(1.0, 0.0, 0.0, 1.0))</code></pre>
+<p>Binding textures or cubemaps works similarly via the ShaderBinding. You can bind any existing Texture via the <b>addTexture</b> method of ShaderBinding.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Texture *texture = Services()->getMaterialManager()->createTextureFromFile("dummy.png", false, false, globalPool);
+binding->addTexture("diffuse", texture);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">texture = Services.MaterialManager:createTextureFromFile("dummy.png", false, false, globalPool)
+binding:addTexture("diffuse", texture)</code></pre>
+<h4 id="lights">Creating and using lights.</h4>
+<p>You can create lights dynamically in code via the SceneLight class.</p>
+<p>Polycode's lights get automatically sorted by the renderer and passed to materials based on distance to the rendered entity and the light's importance setting. Material shaders can define how many lights of each type they accept.</p>
+<p>There are currently two types of lights you can create.</p>
+<p><b>SceneLight::POINT_LIGHT</b> - A positional light that shines in all directions.</p>
+<p><b>SceneLight::SPOT_LIGHT</b> - A positional, directional spot light that shines light in a cone. Can cast shadows.</p>
+<p>To create a light, instantiate a SceneLight class and use Scene's <b>addLight</b> to add it to the scene. This adds it as a light to the scene, but it doesn't add it to the root entity as a child, so you can add it as a child to another entity if you need to attach the light to something else.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">SceneLight *light = new SceneLight(SceneLight::POINT_LIGHT, scene, 5.0);
+scene->addLight(light);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">light = SceneLight(SceneLight.POINT_LIGHT, scene, 5.0)
+scene:addLight(light)</code></pre>

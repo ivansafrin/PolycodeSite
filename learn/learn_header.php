@@ -22,7 +22,8 @@
             <a href="/learn/meshes" class="list-group-item">Rendering meshes</a>
             <a href="/learn/skeletons" class="list-group-item">Skeletal animation</a>
             <a href="/learn/textures" class="list-group-item">Textures and images</a>
-            <a href="/learn/materials" class="list-group-item">Materials and lights</a>
+            <a href="/learn/materials" class="list-group-item">Materials and shaders.</a>
+            <a href="/learn/lights" class="list-group-item">Lights and shadows.</a>
             <a href="/learn/post" class="list-group-item">Post processing</a>
             <a href="/learn/particles" class="list-group-item">Particle systems</a>
             <a href="/learn/render_textures" class="list-group-item">Rendering to texture and virtual scenes</a>

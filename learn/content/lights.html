@@ -1,0 +1,24 @@
+<div class="page-header">
+<h2>Lights and shadows.</h2>
+</div>
+<p class="lead">Polycode allows you to create point and spot lights and use them to light entities and cast shadows via materials.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#ide">Creating and using lights in the IDE.</a></li>
+	<li><a href="#creating">Creating lights in code.</a></li>
+	<li><a href="#shadows">Casting shadows.</a></li>
+</ul>
+<h4 id="ide">Creating and using lights in the IDE.</h4>
+<h4 id="lights">Creating lights in code.</h4>
+<p>You can create lights dynamically in code via the SceneLight class.</p>
+<p>Polycode's lights get automatically sorted by the renderer and passed to materials based on distance to the rendered entity and the light's importance setting. Material shaders can define how many lights of each type they accept.</p>
+<p>There are currently two types of lights you can create.</p>
+<p><b>SceneLight::POINT_LIGHT</b> - A positional light that shines in all directions.</p>
+<p><b>SceneLight::SPOT_LIGHT</b> - A positional, directional spot light that shines light in a cone. Can cast shadows.</p>
+<p>To create a light, instantiate a SceneLight class and use Scene's <b>addLight</b> to add it to the scene. This adds it as a light to the scene, but it doesn't add it to the root entity as a child, so you can add it as a child to another entity if you need to attach the light to something else.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">SceneLight *light = new SceneLight(SceneLight::POINT_LIGHT, scene, 5.0);
+scene->addLight(light);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">light = SceneLight(SceneLight.POINT_LIGHT, scene, 5.0)
+scene:addLight(light)</code></pre>
