@@ -7,8 +7,8 @@
 	<li><a href="#ide">Assigning and using materials in the IDE.</a></li>
 	<li><a href="#assigning">Assigning materials in code.</a></li>
 	<li><a href="#params">Passing parameters to materials.</a></li>
-	<li><a href="#creating_ide">Creating your own materials in the IDE.</a></li>
-	<li><a href="#creating">Creating your own materials.</a></li>
+	<li><a href="#creating_ide">Creating materials in the IDE.</a></li>
+	<li><a href="#creating">Creating materials in code.</a></li>
 </ul>
 <h4 id="ide">Assigning and using materials in the IDE.</h4>
 <p>Polycode includes a number of default materials included in default.pak that we can assign out of the box.</p>
@@ -18,6 +18,9 @@ This will open the material browser and allow you to select the new material. Th
 <img class="limg_r" width="282" src="/learn/images/material_options.png">
 <p>After a material is selected, you will see its options displayed below the material property sheet. In these options, you can assign textures used by the material and change shader unifroms (controllable proprties of the shader).</p>
 <p>If the material already defines its own textures and properties, you will see them here and can override them per each individual assignment.</p>
+<p>If you want to apply a material from a custom material library, you first need to link this material library in the entity settings of the entity editor.</p>
+<img class="limg_r" width="282" src="/learn/images/link_material.png">
+<p>Click on the entity settings button at the top of the entity editor property pane, then click on the "Link materials file" button. After selecting a material library file, it will become available in the material browser when you change materials and you will be able to access the materials available in this material files.</p>
 <h4 id="assigning">Assigning materials in code.</h4>
 <p>You can assign materials in code to any SceneMesh subclass. You can either assign a material by name or by a direct reference to a material resource. If we assign materials by name, we need to specify a resource pool (see Resource management) to get search for the material in. All default materials are loaded into the global resource pool.</p>
 <div class="codeh">C++</div>
@@ -38,8 +41,13 @@ scene:addChild(box)</code></pre>
 <pre><code class="prettyprint">Material *material = (Material*)globalPool->getResource(Resource::RESOURCE_MATERIAL, "Default");
 box->setMaterial(material);</code></pre>
 <div class="codeh">Lua</div>
-<pre><code class="prettyprint">material = globalPool:getResource(Resource.RESOURCE_MATERIAL, "Default")
+<pre><code class="prettyprint">material = safe_cast(globalPool:getResource(Resource.RESOURCE_MATERIAL, "DefaultTextured"), Material)
 box:setMaterial(material)</code></pre>
+<p>If you want to load materials from a custom material library file, you need to load it into a resource pool. You can load it either into the global resource pool or your own custom resource pool (see Resource management) via the MaterialManager.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Services()->getMaterialManager()->loadMaterialLibraryIntoPool(globalPool, "my_materials.mat");</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">Services.MaterialManager:loadMaterialLibraryIntoPool(globalPool, "my_materials.mat")</code></pre>
 <h4 id="params">Passing parameters to materials.</h4>
 <p>You can set textures and uniform properties to applied materials at runtime. There are two sets of options for materials, one applied to the material itself and shared across all of the instances of the material and one specific to the material binding of each SceneMesh. This allows you to control material properties globally for each material and set properties of the material for each individual binding.</p>
 <p>Most of the time, you want to control the properties for each individual binding. This is done using the ShaderBinding class member of SceneMesh, accessible via the <b>getLocalShaderOptions</b> method. A ShaderBinding contains a list of textures and uniforms that are applied to the material shaders as uniforms. When a material is assigned to a SceneMesh, its local shader options are blank, effectively using the ShaderBinding settings of the material. If you add parameters or textures to the local shader binding, they will override the same settings in the global material.</p>
@@ -65,16 +73,54 @@ binding->addTexture("diffuse", texture);</code></pre>
 <div class="codeh">Lua</div>
 <pre><code class="prettyprint">texture = Services.MaterialManager:createTextureFromFile("dummy.png", false, false, globalPool)
 binding:addTexture("diffuse", texture)</code></pre>
-<h4 id="lights">Creating and using lights.</h4>
-<p>You can create lights dynamically in code via the SceneLight class.</p>
-<p>Polycode's lights get automatically sorted by the renderer and passed to materials based on distance to the rendered entity and the light's importance setting. Material shaders can define how many lights of each type they accept.</p>
-<p>There are currently two types of lights you can create.</p>
-<p><b>SceneLight::POINT_LIGHT</b> - A positional light that shines in all directions.</p>
-<p><b>SceneLight::SPOT_LIGHT</b> - A positional, directional spot light that shines light in a cone. Can cast shadows.</p>
-<p>To create a light, instantiate a SceneLight class and use Scene's <b>addLight</b> to add it to the scene. This adds it as a light to the scene, but it doesn't add it to the root entity as a child, so you can add it as a child to another entity if you need to attach the light to something else.</p>
+<p>To set parameters globally in the material, instead of the material binding instance, use the ShaderBinding of the Material itself. Keep in mind that these parameters are added automatically when a material is created, so we want to get the exiting local params, not add them as we did to the material binding instance.</p>
+<p>To get the material shader binding, we use the <b>getShaderBinding</b> method, which takes an shader index. For all non-screen materials, the shader index will always be 0, as they only use 1 shader. For scren (post-processing) materials, which can use multiple shader passes, each shader has its own shader binding.</p>
 <div class="codeh">C++</div>
-<pre><code class="prettyprint">SceneLight *light = new SceneLight(SceneLight::POINT_LIGHT, scene, 5.0);
-scene->addLight(light);</code></pre>
+<pre><code class="prettyprint">ShaderBinding *binding = material->getShaderBinding(0);
+binding->getLocalParamByName("diffuse_color")->setColor(Color(1.0, 0.0, 0.0, 1.0));</code></pre>
 <div class="codeh">Lua</div>
-<pre><code class="prettyprint">light = SceneLight(SceneLight.POINT_LIGHT, scene, 5.0)
-scene:addLight(light)</code></pre>
+<pre><code class="prettyprint">binding = material:getShaderBinding(0)
+binding:getLocalParamByName("diffuse_color"):setColor(Color(1.0, 0.0, 0.0, 1.0))</code></pre>
+<h4 id="creating_ide">Creating your own materials in the IDE.</h4>
+<p>The Polycode IDE comes with a material editor that allows you to create your own materials and save them to material files.</p>
+<p>Material files (.mat) are XML-based files that can contain definitions for shaders, materials, cubemaps and post-processing materials. The Polycode IDE lets you edit all of these.</p>
+<p>To create your own materials, you need to first create a material library. Add a new file to your project and choose "Material Library" in the file templates.</p>
+<img class="limg_c" width="610" src="/learn/images/create_material_library.png">
+<p>After opening the material file, all of the shaders, materials, cubemaps and post materials will be listed in the material browser on the right side.</p>
+<img class="limg_l" width="199" src="/learn/images/create_material.png">
+<p>To create a new material, click on the material create button above the material browser. This will add a new material to the material library and open it for editing. Here you can define the material name, shader to use and the color blending mode of the material. The shaders available to you in the dropdown are the default shaders plus any shaders created in this material file.</p>
+<img class="limg_l" width="199" src="/learn/images/create_shader.png">
+<p>If you want to create a custom shader for your material, you need to create a new shader in the material library. Click on the create shader button on top of the material browser to create the new shader. The new shader will be added to the material browser and will open for editing. Here you can define the name of the shader, the vertex and fragment programs that it will use and the number of lights passed to it by the renderer. After the shader is created, it will be available to you in the shader dropdown of all the materials in this material library.</p>
+<h4 id="creating">Creating materials in code.</h4>
+<p>You can also create materials directly in code without using material files.</p>
+<p>The code below demonstrates creating a shader using custom vertex and fragment programs and then creating a material using the custom shader, however, you can create materials using the default shaders that come with Polycode.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">MaterialManager *materialManager = Services()->getMaterialManager();
+
+ShaderProgram *program = materialManager->createProgramFromFile("my_shader.frag");
+globalPool->addResource(program);
+program = materialManager->createProgramFromFile("my_shader.vert");
+globalPool->addResource(program);
+
+Shader *myShader = materialManager->createShader(globalPool, "glsl", "MyShader", "my_shader.vert", "my_shader.frag", false);
+myShader->numPointLights = 4.0;
+myShader->screenShader = false;
+globalPool->addResource(myShader);
+
+Material *myMaterial = materialManager->createMaterial(globalPool, "MyMaterial", "MyShader");
+globalPool->addResource(myMaterial);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">materialManager = Services.MaterialManager
+    
+program = materialManager:createProgramFromFile("my_shader.frag")
+globalPool:addResource(program)
+program = materialManager:createProgramFromFile("my_shader.vert")
+globalPool:addResource(program)
+    
+myShader = materialManager:createShader(globalPool, "glsl", "MyShader", "my_shader.vert", "my_shader.frag", false)
+myShader.numPointLights = 4.0
+myShader.screenShader = false
+globalPool:addResource(myShader)
+    
+myMaterial = materialManager:createMaterial(globalPool, "MyMaterial", "MyShader")
+globalPool:addResource(myMaterial)</code></pre>

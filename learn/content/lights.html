@@ -9,7 +9,9 @@
 	<li><a href="#shadows">Casting shadows.</a></li>
 </ul>
 <h4 id="ide">Creating and using lights in the IDE.</h4>
-<h4 id="lights">Creating lights in code.</h4>
+<img class="limg_l" width="173" src="/learn/images/create_light.png">
+<p>To add a light in the IDE entity editor, click on the add entity button in the top left corner of the editor screen. After creating the light, you can edit its settings in the entity properties to the right.</p>
+<h4 id="creating">Creating lights in code.</h4>
 <p>You can create lights dynamically in code via the SceneLight class.</p>
 <p>Polycode's lights get automatically sorted by the renderer and passed to materials based on distance to the rendered entity and the light's importance setting. Material shaders can define how many lights of each type they accept.</p>
 <p>There are currently two types of lights you can create.</p>
@@ -22,3 +24,4 @@ scene->addLight(light);</code></pre>
 <div class="codeh">Lua</div>
 <pre><code class="prettyprint">light = SceneLight(SceneLight.POINT_LIGHT, scene, 5.0)
 scene:addLight(light)</code></pre>
+<h4>Casting shadows</h4>
