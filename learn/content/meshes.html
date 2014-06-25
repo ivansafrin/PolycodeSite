@@ -1,0 +1,51 @@
+<div class="page-header">
+<h2>Mesh rendering.</h2>
+</div>
+<p class="lead">Almost every visible thing in Polycode is rendered via the SceneMesh class, which is an Entity subclass that wraps the Mesh class, which contains the actual geometry information. You can load meshes from files or create them manually. Higher level classes in Polycode like ScenePrimitives and SceneLabels all subclass SceneMesh.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#types">Meshes and mesh types.</a></li>
+	<li><a href="#creating">Creating meshes programmatically.</a></li>
+	<li><a href="#loading">Loading meshes from file.</a></li>
+</ul>
+<h4 id="types">Meshes and mesh types.</h4>
+Polycode's <a href="/docs/class_polycode_1_1_mesh.html">Mesh class</a> is the base for all mesh geometry in Polycode. It contains vertex information and a mesh type that defines how these vertices are rendered (as lines, points or polygons). The image below demonstrates the various mesh types and how they render their vertex data.</p>
+<center><img src="/learn/images/mesh_types.svg"/></center>
+<h4 id="creating">Creating meshes programatically.</h4>
+<p>To create and render a mesh, you need to create a SceneMesh instance and add it to your scene, then add vertices to its Mesh. Alternatively, you can create a Mesh first, and then initialize a SceneMesh (or multiple SceneMesh instances) with the Mesh. An important note is that you have to call dirtyArrays() on the Mesh after you make changes to it, so that its vertex arrays get rebuilt from the vertex data.
+
+Let's look at creating and adding a simple single-quad mesh to a scene.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Scene *scene = new Scene(Scene::SCENE_2D);
+SceneMesh *sceneMesh = new SceneMesh(Mesh::QUAD_MESH);
+
+sceneMesh->getMesh()->addVertex(0.2, -0.2, 0.0);
+sceneMesh->getMesh()->addVertex(0.2, 0.2, 0.0);
+sceneMesh->getMesh()->addVertex(-0.2, 0.2, 0.0);
+sceneMesh->getMesh()->addVertex(-0.2, -0.2, 0.0);
+sceneMesh->getMesh()->dirtyArrays();
+
+scene->addChild(sceneMesh);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">scene = Scene(Scene.SCENE_2D)
+sceneMesh = SceneMesh.SceneMeshWithType(Mesh.QUAD_MESH)
+    
+sceneMesh:getMesh():addVertex(0.2, -0.2, 0.0, 0.0, 0.0)
+sceneMesh:getMesh():addVertex(0.2, 0.2, 0.0, 0.0, 0.0)
+sceneMesh:getMesh():addVertex(-0.2, 0.2, 0.0, 0.0, 0.0)
+sceneMesh:getMesh():addVertex(-0.2, -0.2, 0.0, 0.0, 0.0)
+sceneMesh:getMesh():dirtyArrays();
+    
+scene:addChild(sceneMesh)</code></pre>
+<p>When adding vertices to a mesh, it's important to note that they have to be added in counter-clockwise order from the front of each face. If you want a face to be visible from both sides, you need to disable backface culling on the SceneMesh instance (backfaceCulled = false).</p>
+<h4 id="loading">Loading meshes from file.</h4>
+<p>Polycode uses a custom mesh format (.mesh), which you can convert to from a variety of different 3d file formats using the Polycode import tool (see Importing Assets). Meshes can be loaded by intializing a SceneMesh with the path of the mesh file.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Scene *scene = new Scene(Scene::SCENE_3D);
+SceneMesh *mesh = new SceneMesh("dummy.mesh");
+scene->addChild(mesh);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">scene = Scene(Scene.SCENE_3D)
+mesh = SceneMesh("dummy.mesh")
+scene:addChild(mesh)</code></pre>
+

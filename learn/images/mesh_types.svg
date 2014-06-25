@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 17.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="402.778px" height="379.167px" viewBox="0 0 402.778 379.167" enable-background="new 0 0 402.778 379.167"
+	 xml:space="preserve">
+<line fill="none" stroke="#606161" stroke-miterlimit="10" x1="381.778" y1="196.444" x2="288.444" y2="197.111"/>
+<line fill="none" stroke="#606161" stroke-miterlimit="10" x1="189.111" y1="181.111" x2="220.444" y2="180.444"/>
+<line fill="none" stroke="#606161" stroke-miterlimit="10" x1="22.444" y1="195.778" x2="53.778" y2="180.444"/>
+<line fill="none" stroke="#606161" stroke-miterlimit="10" x1="80.444" y1="180.444" x2="111.111" y2="196.444"/>
+<polygon fill="#CFCECE" stroke="#606161" stroke-miterlimit="10" points="306.971,91.413 354.407,46.433 333.259,30.7 
+	307.946,18.681 279.83,25.891 268.714,47.982 "/>
+<line fill="none" stroke="#606161" stroke-miterlimit="10" x1="280.778" y1="24.944" x2="306.278" y2="89.944"/>
+<line fill="none" stroke="#606161" stroke-miterlimit="10" x1="307.778" y1="16.444" x2="305.778" y2="89.944"/>
+<line fill="none" stroke="#606161" stroke-miterlimit="10" x1="332.778" y1="26.944" x2="305.778" y2="89.944"/>
+<polygon fill="#CFCECE" stroke="#606161" stroke-miterlimit="10" points="61.33,55.241 60.432,93.826 28.128,91.583 23.641,62.419 
+	"/>
+<polygon fill="#CFCECE" stroke="#606161" stroke-miterlimit="10" points="113.961,54.026 113.064,92.612 80.76,90.368 
+	78.855,44.112 "/>
+<text transform="matrix(1 0 0 1 33.021 132.3053)" fill="#787878" font-family="'HelveticaNeue-Bold'" font-size="12">QUAD_MESH</text>
+<text transform="matrix(1 0 0 1 33.021 250.254)" fill="#787878" font-family="'HelveticaNeue-Bold'" font-size="12">LINE_MESH</text>
+<text transform="matrix(1 0 0 1 161.0367 132.3053)" fill="#787878" font-family="'HelveticaNeue-Bold'" font-size="12">TRI_MESH</text>
+<circle fill="#A3A2A2" cx="23.6" cy="62.078" r="6.923"/>
+<text transform="matrix(1 0 0 1 20.7434 65.6069)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">2</text>
+<circle fill="#A3A2A2" cx="28.79" cy="91.945" r="6.923"/>
+<text transform="matrix(1 0 0 1 25.9338 95.4741)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">3</text>
+<circle fill="#A3A2A2" cx="60.197" cy="91.945" r="6.923"/>
+<text transform="matrix(1 0 0 1 57.341 95.4741)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">0</text>
+<circle fill="#A3A2A2" cx="60.421" cy="54.032" r="6.923"/>
+<text transform="matrix(1 0 0 1 57.5652 57.562)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">1</text>
+<circle fill="#A3A2A2" cx="80.111" cy="180.444" r="6.923"/>
+<text transform="matrix(1 0 0 1 77.2549 183.9737)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">2</text>
+<circle fill="#A3A2A2" cx="109.778" cy="195.778" r="6.923"/>
+<text transform="matrix(1 0 0 1 106.9214 199.3068)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">3</text>
+<circle fill="#A3A2A2" cx="22.444" cy="195.111" r="6.923"/>
+<text transform="matrix(1 0 0 1 19.5884 198.6402)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">0</text>
+<circle fill="#A3A2A2" cx="53.111" cy="179.778" r="6.923"/>
+<text transform="matrix(1 0 0 1 50.255 183.3073)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">1</text>
+<text transform="matrix(1 0 0 1 165.0723 364.254)" fill="#787878" font-family="'HelveticaNeue-Bold'" font-size="12">POINT_MESH</text>
+<circle fill="#A3A2A2" cx="215.162" cy="293.778" r="6.923"/>
+<text transform="matrix(1 0 0 1 212.3062 297.3071)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">2</text>
+<circle fill="#A3A2A2" cx="234.496" cy="313.111" r="6.923"/>
+<text transform="matrix(1 0 0 1 231.6394 316.6402)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">3</text>
+<circle fill="#A3A2A2" cx="196.496" cy="327.778" r="6.923"/>
+<text transform="matrix(1 0 0 1 193.6397 331.3069)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">0</text>
+<circle fill="#A3A2A2" cx="183.162" cy="295.111" r="6.923"/>
+<text transform="matrix(1 0 0 1 180.3062 298.6406)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">1</text>
+<line fill="none" stroke="#606161" stroke-miterlimit="10" x1="159.444" y1="195.778" x2="190.778" y2="180.444"/>
+<line fill="none" stroke="#606161" stroke-miterlimit="10" x1="221.444" y1="180.444" x2="252.111" y2="196.444"/>
+<text transform="matrix(1 0 0 1 147.021 249.5873)" fill="#787878" font-family="'HelveticaNeue-Bold'" font-size="12">LINE_STRIP_MESH</text>
+<circle fill="#A3A2A2" cx="221.111" cy="180.444" r="6.923"/>
+<text transform="matrix(1 0 0 1 218.2549 183.9737)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">2</text>
+<circle fill="#A3A2A2" cx="250.778" cy="195.778" r="6.923"/>
+<text transform="matrix(1 0 0 1 247.9214 199.3068)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">3</text>
+<circle fill="#A3A2A2" cx="159.444" cy="195.111" r="6.923"/>
+<text transform="matrix(1 0 0 1 156.5884 198.6402)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">0</text>
+<circle fill="#A3A2A2" cx="190.111" cy="179.778" r="6.923"/>
+<text transform="matrix(1 0 0 1 187.2549 183.3073)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">1</text>
+<line fill="none" stroke="#606161" stroke-miterlimit="10" x1="319.111" y1="181.111" x2="350.444" y2="180.444"/>
+<line fill="none" stroke="#606161" stroke-miterlimit="10" x1="289.444" y1="195.778" x2="320.778" y2="180.444"/>
+<line fill="none" stroke="#606161" stroke-miterlimit="10" x1="351.444" y1="180.444" x2="382.111" y2="196.444"/>
+<text transform="matrix(1 0 0 1 278.021 249.5873)" fill="#787878" font-family="'HelveticaNeue-Bold'" font-size="12">LINE_LOOP_MESH</text>
+<circle fill="#A3A2A2" cx="351.111" cy="180.444" r="6.923"/>
+<text transform="matrix(1 0 0 1 348.2549 183.9737)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">2</text>
+<circle fill="#A3A2A2" cx="380.778" cy="195.778" r="6.923"/>
+<text transform="matrix(1 0 0 1 377.9214 199.3068)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">3</text>
+<circle fill="#A3A2A2" cx="289.444" cy="195.111" r="6.923"/>
+<text transform="matrix(1 0 0 1 286.5884 198.6402)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">0</text>
+<circle fill="#A3A2A2" cx="320.111" cy="179.778" r="6.923"/>
+<text transform="matrix(1 0 0 1 317.2549 183.3073)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">1</text>
+<polygon fill="#CFCECE" stroke="#606161" stroke-miterlimit="10" points="212.033,56.378 211.135,94.964 179.102,76.776 "/>
+<circle fill="#A3A2A2" cx="177.976" cy="76.536" r="6.923"/>
+<text transform="matrix(1 0 0 1 175.1199 80.065)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">2</text>
+<circle fill="#A3A2A2" cx="210.635" cy="93.932" r="6.923"/>
+<text transform="matrix(1 0 0 1 207.7794 97.4615)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">0</text>
+<circle fill="#A3A2A2" cx="210.86" cy="56.02" r="6.923"/>
+<text transform="matrix(1 0 0 1 208.0036 59.5494)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">1</text>
+<path fill="#CFCECE" stroke="#606161" stroke-miterlimit="10" d="M164.792,57.616l36.887-16.431l-32.863-22.132
+	c-4.039,38.392-4.039,38.392-4.039,38.392"/>
+<circle fill="#A3A2A2" cx="165.233" cy="58.092" r="6.923"/>
+<text transform="matrix(1 0 0 1 162.3772 61.6216)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">5</text>
+<circle fill="#A3A2A2" cx="202.679" cy="40.85" r="6.923"/>
+<text transform="matrix(1 0 0 1 199.8232 44.3787)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">3</text>
+<circle fill="#A3A2A2" cx="169.949" cy="19.468" r="6.923"/>
+<text transform="matrix(1 0 0 1 167.0929 22.9979)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">4</text>
+<text transform="matrix(1 0 0 1 268.0367 132.3053)" fill="#787878" font-family="'HelveticaNeue-Bold'" font-size="12">TRIFAN_MESH</text>
+<circle fill="#A3A2A2" cx="332.759" cy="29.2" r="6.923"/>
+<text transform="matrix(1 0 0 1 329.9027 32.7288)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">2</text>
+<circle fill="#A3A2A2" cx="306.471" cy="89.913" r="6.923"/>
+<text transform="matrix(1 0 0 1 303.6152 93.4424)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">0</text>
+<circle fill="#A3A2A2" cx="353.907" cy="44.933" r="6.923"/>
+<text transform="matrix(1 0 0 1 351.0505 48.4626)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">1</text>
+<circle fill="#A3A2A2" cx="268.214" cy="46.482" r="6.923"/>
+<text transform="matrix(1 0 0 1 265.3581 50.0109)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">5</text>
+<circle fill="#A3A2A2" cx="307.446" cy="17.181" r="6.923"/>
+<text transform="matrix(1 0 0 1 304.5903 20.7106)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">3</text>
+<circle fill="#A3A2A2" cx="280.968" cy="24.381" r="6.923"/>
+<text transform="matrix(1 0 0 1 278.112 27.9102)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">4</text>
+<circle fill="#A3A2A2" cx="79.051" cy="44.834" r="6.923"/>
+<text transform="matrix(1 0 0 1 76.1947 48.3629)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">6</text>
+<circle fill="#A3A2A2" cx="81.706" cy="91.438" r="6.923"/>
+<text transform="matrix(1 0 0 1 78.8493 94.967)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">7</text>
+<circle fill="#A3A2A2" cx="113.112" cy="91.438" r="6.923"/>
+<text transform="matrix(1 0 0 1 110.2565 94.967)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">4</text>
+<circle fill="#A3A2A2" cx="113.337" cy="53.525" r="6.923"/>
+<text transform="matrix(1 0 0 1 110.4807 57.0548)" fill="#FFFFFF" font-family="'HelveticaNeue-Bold'" font-size="9.9698">5</text>
+</svg>

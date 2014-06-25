@@ -1,0 +1,48 @@
+<div class="page-header">
+        <h2>Rendering text.</h2>
+</div>
+<p class="lead">Polycode provides text rendering support using True Type and Open Type fonts via the Freetype library. You can render text to textures or use the <b>SceneLabel</b> entity to add text directly to your scenes.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#creating">Adding text to a scene.</a></li>
+	<li><a href="#custom_fonts">Loading custom fonts.</a></li>
+	<li><a href="#color_text">Color text.</a></li>
+</ul>
+<h4 id="creating">Adding text to a scene.</h4>
+<p>You can use the SceneLabel class to add text as an entity directly to your scene. A SceneLabel is just a TYPE_VPLANE ScenePrimitive, that wraps the Label class, which is a Texture that can render text, with that texture set as the primitive's main texture.</p>
+<p>To create a SceneLabel, we pass it the initial label text, the pixel height of the rendered text, the font name, antialiasing method and the actual label height in the scene. Polycode comes with 3 default fonts: <b>sans</b>, <b>serif</b> and <b>mono</b>. The two antialiasing options are ANTIALIAS_FULL and ANTIALIAS_NONE.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Scene *scene = new Scene(Scene::SCENE_2D);
+SceneLabel *label = new SceneLabel("Hello, World!", 64, "sans", Label::ANTIALIAS_FULL, 0.1);
+scene->addChild(label);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">scene = Scene(Scene.SCENE_2D)
+label = SceneLabel("Hello, World!", 64, "sans", Label.ANTIALIAS_FULL, 0.1)
+scene:addChild(label)</code></pre>
+<h4 id="custom_fonts">Loading custom fonts.</h4>
+<p>You can load your own True Type or Open Type fonts to use in labels. You can do this via the FontManager class in the CoreServices singleton. After you register the font, you can pass the name you register it with as the font name to a SceneLabel.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">CoreServices::getInstance()->getFontManager()->registerFont("MyFont", "MyFont.ttf");
+SceneLabel *label = new SceneLabel("Hello, World!", 64, "MyFont", Label::ANTIALIAS_FULL, 0.1);
+</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">Services.FontManager:registerFont("CustomFont", "MyFont.ttf")
+label = SceneLabel("Hello, World!", 64, "MyFont", Label.ANTIALIAS_FULL, 0.1)
+</code></pre>
+<h4 id="color_text">Color text.</h4>
+<p>Since SceneLabels are subclassed from a SceneMesh, you can just set their color to set the color of the whole label. But if you want to set color to individual letters within the label, you can use the <b>setColorForRange</b> method of Label before calling setText().</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Scene *scene = new Scene(Scene::SCENE_2D);
+SceneLabel *label = new SceneLabel("", 64, "sans", Label::ANTIALIAS_FULL, 0.1);
+label->getLabel()->setColorForRange(Color(1.0, 0.0, 0.0, 1.0), 0, 5);
+label->getLabel()->setColorForRange(Color(0.0, 0.0, 1.0, 1.0), 6, 12);
+label->setText("Hello World!");
+scene->addChild(label);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">scene = Scene(Scene.SCENE_2D)
+label = SceneLabel("", 64, "sans", Label.ANTIALIAS_FULL, 0.1)
+label:getLabel():setColorForRange(Color(1.0, 0.0, 0.0, 1.0), 0, 5)
+label:getLabel():setColorForRange(Color(0.0, 0.0, 1.0, 1.0), 6, 12)
+label:setText("Hello World!")
+scene:addChild(label)</code></pre>
+

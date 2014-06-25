@@ -140,6 +140,10 @@ body, html {
 	margin-top: 30px;
 }
 
+pre {
+	font-size: 12px;
+}
+
 .codeh {
 	color: #ababab;
 	font-family: 'Montserrat', sans-serif;

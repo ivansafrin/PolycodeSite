@@ -2,6 +2,7 @@ Options +FollowSymlinks
 RewriteEngine on
 
 RewriteRule ^(learn/index.php) - [L]
+RewriteRule ^(learn/images/*) - [L]
 RewriteRule ^learn/([^/]+) /learn/index.php?article=$1 [NC]
 RewriteRule ^learn/([^/]+) /learn/index.php?article=$1 [NC]
 

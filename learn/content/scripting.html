@@ -1,0 +1,62 @@
+<div class="page-header">
+<h2>Lua scripting.</h2>
+</div>
+<p class="lead">Polycode provides a standalone Lua scripting system that uses an API generated directly from the C++ code. It is built into the Polycode IDE, which lets you export your application directly to other platforms supported by Polycode.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#note">A note on Lua and C++.</a></li>
+	<li><a href="#api">Lua API overview.</a></li>
+	<li><a href="#classes">Classes in Lua.</a></li>
+	<li><a href="#inheritance">Inheritance in Lua classes.</a></li>
+</ul>
+<h4 id="note">A note on Lua and C++.</h4>
+<p>Though the Polycode IDE was created as a scripting environment where you can write and publish cross-platform applications written in Lua, Polycode is designed primarily as a C++ engine, and as such, it is advised that if you are comfortable with C++, you use it as a C++ API, and use the IDE strictly for for asset editing.</p>
+<h4 id="api">Lua API overview.</h4>
+<p>The Lua API is automatically generated from the C++ source and covers most of the functionality available in C++, but currently it does have some limitations. Some parts of the Polycode API that use direct memory access, such as networking and some parts of image editing are not available in Lua.</p>
+<p>Some commonly used functionality was also simplified in Lua and takes advantage of some of Lua's features. For example, instead of adding event listeners to CoreInput to process input, you can simply write an onKeyDown function that will be called automatically.</p>
+<h4 id="classes">Classes in Lua.</h4>
+<p>While Lua doesn't have a built-in class system, it is flexible enough to allow the creation of a custom class syntax, which Polycode's API takes advantage of. Polycode uses a custom class API which adds classes with inheritance to Lua. When you use the Polycode API, you automatically have access to the class API and can create your own classes in Lua.</p>
+<p>The Polycode API is generated from the C++ classes and uses the custom Lua class structure to wrap around the C++ bindings, allowing you to inherit from the main API classes like you would a regular Lua class.</p>
+<p>Here is an example of a simple class in Lua, which uses the Polycode class API. </p>
+<pre><code class="prettyprint">class "Person"
+
+function Person:Person(name, age)
+        self.name = name
+        self.age = age
+end
+
+function Person:printInfo()
+        print("Name:"..self.name..", Age: "..self.age)
+end
+
+person = Person("Bruce Wayne", 32)
+person:printInfo()</code></pre>
+<h4 id="inheritance">Inheritance in Lua classes.</h4>
+<p>You can inherit classes from other classes using the Polycode class API. You can even inherit from the main API classes, as they use the same class system on top of the C++ bindings.</p>
+<p>Here is an example of a class extending our first example.</p>
+<pre><code class="prettyprint">class "Person"
+
+function Person:Person(name, age)
+        self.name = name
+        self.age = age
+end
+
+function Person:printInfo()
+        print("Name:"..self.name..", Age: "..self.age)
+end
+
+
+class "Superhero" (Person)
+
+function Superhero:Superhero(heroName, name, age)
+        self.heroName = heroName
+        Person.Person(self, name, age)
+end
+
+function Superhero:printInfo()
+	Person.printInfo(self)
+        print("Also known as "..self.heroName)
+end
+
+person = Superhero("Batman", "Bruce Wayne", 32)
+person:printInfo()</code></pre>

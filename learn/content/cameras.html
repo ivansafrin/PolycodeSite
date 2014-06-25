@@ -1,0 +1,26 @@
+<div class="page-header">
+        <h2>Cameras and resolutions.</h2>
+</div>
+<p class="lead">All scenes in Polycode are rendered via a <b>Camera</b>. Even in 2D. Each scene comes with its own default camera and is set to automatically render from it. Cameras are entities like any other and you can move and rotate them to change how a scene is rendered.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#camera_types">2D and 3D cameras.</a></li>
+	<li><a href="#ortho">Orthographic modes and resolutions.</a></li>
+	<li><a href="#perspective">Perspective modes.</a></li>
+	<li><a href="#custom_matrix">Custom projection matrix.</a></li>
+</ul>
+<h4 id="camera_types">2D and 3D cameras.</h4>
+<p>Cameras can be set to be either <a href="http://en.wikipedia.org/wiki/Perspective_(graphical)">perspective</a> or <a href="http://en.wikipedia.org/wiki/Orthographic_projection">orthographic</a>. When you initialize a Scene with SCENE_2D or SCENE_2D_TOPLEFT, its default camera is set to an orthographic mode and in SCENE_3D the camera is set to perspective mode. You can change this mode at any time using the <b>setProjectionMode</b> method.</p>
+
+<h4 id="ortho">Orthographic modes and resolutions.</h4>
+<p>There are a number of orthographic modes that you can set a camera to and they all have to do with how the orthographic size of the camera relates to the resolution and aspect ratio of the screen. The orthographic size is essentially how many Polycode units the camera can see on the screen.</p> 
+<p><b>ORTHO_SIZE_MANUAL</b> - Manual ortho size. Manually set the width and height of the rendered area using the <b>setOrthoSize</b> method. This will effectively stretch the render to fit whatever aspect ratio the viewport is set to.</p>
+<p><b>ORTHO_SIZE_LOCK_HEIGHT</b> - The ortho height is set by <b>setOrthoSize</b> and the width is adjusted based on the aspect ratio of the viewport. Use this mode when you want resolution independent 2D.</p>
+<p><b>ORTHO_SIZE_LOCK_WIDTH</b> - The ortho width is set by <b>setOrthoSize</b> and the height is adjusted based on the aspect ratio of the viewport. Use this mode when you want resolution independent 2D.</p>
+<p><b>ORTHO_SIZE_VIEWPORT</b> - The ortho size is set automatically based on the resolution of the viewport. Use this mode if you want your 2D scene to scale based on the resolution or you want pixel-perfect 2D rendering.</p>
+
+<h4 id="perspective">Perspective modes.</h4>
+<p>Perspective mode is set using <b>PERSPECTIVE_FOV</b> or <b>PERSPECTIVE_FRUSTUM</b> modes. Most of the time you will want PERSPECTIVE_FOV, which uses the camera's FOV setting (<b>setFOV</b>) method to set the perspective. PERSPECTIVE_FRUSTUM is set by calling <b>setFrustumMode</b> and passing it exact frustum planes.</p>
+
+<h4 id="custom_matrix">Custom projection matrix.</h4>
+<p>If you're feeling particularly adventurous and feel the need to set the projection matrix of the camera manually, set the projection mode to <b>MANUAL_MATRIX</b> and use the <b>setProjectionMatrix</b> method to set the matrix.</p>

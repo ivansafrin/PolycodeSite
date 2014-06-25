@@ -1,0 +1,15 @@
+<div class="page-header">
+<h2>Post processing.</h2>
+</div>
+<p class="lead">Polycode's material system can be used to implement multi-pass post-processing screen shaders and assign them to scene cameras.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#overview">Post processing overview.</a></li>
+	<li><a href="#simple">Simple post-processing shaders.</a></li>
+	<li><a href="#multipass">Multiple pass shaders.</a></li>
+</ul>
+<h4 id="overview">Post processing overview.</h4>
+<p>Post processing can be used to create screen-based effects, like glare, color correction and depth of field.</p>
+<p>On a technical level, it involves rendering the scene to a buffer and then passing it as a texture to a shader applied to a full screen quad. Polycode does all of that automatically when you apply a screen material to a Camera.</p>
+<p>A screen material is similar to a regular material, but it can also define multiple passes using different shaders and can define texture buffers to render to.</p>
+<h4 id="simple">Simple post-processing shaders.</h4>

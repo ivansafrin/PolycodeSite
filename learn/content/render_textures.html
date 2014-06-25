@@ -1,0 +1,21 @@
+<div class="page-header">
+<h2>Rendering to texture and virtual scenes.</h2>
+</div>
+<p class="lead">Polycode allows Cameras to render directly to a texture and the creation of virtual scenes, which only render to texture.</p>
+<h4>Contents</h4>
+
+<ul>
+	<li><a href="#overview">Texture rendering overview.</a></li>
+	<li><a href="#creating">Creating render textures.</a></li>
+	<li><a href="#virtual_scenes">Creating virtual scenes.</a></li>
+</ul>
+
+<h4 id="overview">Texture rendering overview.</h4>
+<p>Sometimes you want to render to a texture that you can use to apply to a mesh in a scene. You can use this to create things like mirrors, reflection maps, screens to other parts of a scene or a different scene entirely or use it for rendering 3d elements into 2d.</p>
+
+<h4 id="creating">Creating render textures.</h4>
+<p>The class that we use for rendering to texture is the SceneRenderTexture class.</p>
+
+<h4 id="virtual_scenes">Creating virtual scenes.</h4>
+
+Sometimes you want to ONLY render  a scene to a texture without rendering it to screen directly. For example, you might want to render a 3d mesh onto a 2d element. In a Polycode, this is called a virtual scene.

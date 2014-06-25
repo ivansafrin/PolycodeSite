@@ -1,0 +1,34 @@
+<div class="page-header">
+        <h2>Images and primitives.</h2>
+</div>
+<p class="lead">Polycode provides a number of basic geometry primitives that you can create as well as a simple image display class that lets you quickly add images to a scene.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#primitives">Creating primitives.</a></li>
+	<li><a href="#images">Creating images.</a></li>
+</ul>
+<h4 id="primitives">Creating primitives.</h4>
+<p>To create a primitive, use the <b>ScenePrimitive</b> class. The first argument to the constructor of a ScenePrimitive is the type of primitive you want to create, followed by the parameters that define its size and other options.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Scene *scene = new Scene(Scene::SCENE_2D);
+ScenePrimitive *box = new ScenePrimitive(ScenePrimitive::TYPE_VPLANE, 0.5, 0.5);
+scene->addChild(box);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">scene = Scene(Scene.SCENE_2D)
+box = ScenePrimitive(ScenePrimitive.TYPE_VPLANE, 0.5, 0.5)
+scene:addChild(box)</code></pre>
+<p>See <a href="http://beta.polycode.org/docs/class_polycode_1_1_scene_primitive.html#af51c0df938c334ac927b945bfbf57d15">the ScenePrimitive</a> documentation for the different types of primitives you can create and the options that they take.</p>
+<h4 id="images">Creating images.</h4>
+<p>Polycode provides a simple wrapper around ScenePrimitive called SceneImage, which creates a VPLANE primitive and sets a texture from an image file. SceneImage is provided as a convenience class for 2d scenes and has very limited functionality. For more complex image and texture manipulation, see <a href="/learn/textures">Textures and images</a>.
+<p>SceneImage sets the size of the VPLANE primitive to the pixel dimentions of the image, so you have to make sure your scene ortho size is set to something large enough that you can fit the image dimensions within it (see <a href="/learn/cameras#ortho">Orthographic modes and resolutions</a>).</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Scene *scene = new Scene(Scene::SCENE_2D);
+scene->getDefaultCamera()->setOrthoSize(1920, 1080);
+SceneImage *image = new SceneImage("dummy.png");
+scene->addChild(image);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">scene = Scene(Scene.SCENE_2D)
+scene:getDefaultCamera():setOrthoSize(1920, 1080)
+image = SceneImage("dummy.png")
+scene:addChild(image)</code></pre>
+

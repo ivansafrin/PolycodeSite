@@ -1,22 +1,63 @@
 <div class="page-header">
         <h2>Scenes and entities.</h2>
 </div>
-<p class="lead">Polycode uses a scene graph system for all of its internal rendering. Scenes and entities are the base components of this scene graph.
-<h4>Scenes overview.</h4>
-<p>All rendering in Polycode happens via Scenes. A Scene is at its most basic, a container for the root entity and a camera defining how the scene is rendered. Scenes can be instantiated as 2D or 3D, which defines the initial default camera settings for the scene (you can change the camera settings at any time after that or render via different cameras). You can have any number of scenes rendering at the same time. For example, you can use a 3D Scene to render a game and a 2D Scene on top of it to render the UI. Scenes are managed internally by the SceneManager.</p>
-<h4>Entities overview.</h4>
+<p class="lead">Polycode uses a managed scene graph system for all of its internal rendering, which means that you don't manually render things, but add them to a scene and the rendering is done automatically. Scenes and entities are the base components of this scene graph.
+<h4>Contents</h4>
+<ul>
+	<li><a href="#scenes">Scenes overview.</a></li>
+	<li><a href="#entities">Entities overview.</a></li>
+	<li><a href="#creating">Creating a scene.</a></li>
+	<li><a href="#adding">Adding entities to the scene.</a></li>
+	<li><a href="#transforming">Transforming entities.</a></li>
+</ul>
+<h4 id="scenes">Scenes overview.</h4>
+<p>All rendering in Polycode happens via Scenes. A Scene is, at its most basic, a container for the root entity and a camera defining how the scene is rendered. Scenes can be instantiated as 2D or 3D, which defines the initial default camera settings for the scene (you can change the camera settings at any time after that or render via different cameras). You can have any number of scenes rendering at the same time. For example, you can use a 3D Scene to render a game and a 2D Scene on top of it to render the UI. Scenes are managed internally by the SceneManager.</p>
+<h4 id="entities">Entities overview.</h4>
 <p>Entities are the base of all positional and renderable objects in Polycode. They contain transform information, render and update code as well as various entity properties, such as id's and tags. They can contain other entities and form complex hierarchies. There is a single <i>root</i> contained in every Scene and all entities added to that scene are children of its root entity.</p>
-<h4>Creating a scene.</h4>
+<h4 id="creating">Creating a scene.</h4>
 <p>There are three types of scenes that you can create, each one defining the default camera options and coordinate system of the scene. Though you can change the camera options or switch to another camera at any point.</p>
 <p><b>SCENE_3D</b> - Perspective camera, Y-up coordinate system. Use this setting for all 3D scenes.</p> 
-<p><b>SCENE_2D</b> - Orthographic camera, Y-up coordinate system with 0,0 coordinate in the middle of the screen. The orthographic mode of the camera is set to lock height at 1.0 and adjust the width based on the aspect ratio (see <a href="">ORTHO_SIZE_LOCK_HEIGHT mode</a> below). Use this setting for resolution-independent 2D scenes.</p> 
-<p><b>SCENE_2D_TOPLEFT</b> - Orthographic camera, Y-down coordinate system with 0,0 coordinate in the top left corner of the screen. The orthographic mode of the camera is set to match the orthographic size to current resolution (see <a href="">ORTHO_SIZE_VIEWPORT mode</a> below). Use this setting for resolution-dependent UI scenes.</p>
+<p><b>SCENE_2D</b> - Orthographic camera, Y-up coordinate system with 0,0 coordinate in the middle of the screen. The orthographic mode of the camera is set to lock height at 1.0 and adjust the width based on the aspect ratio (see <a href="/learn/cameras">ORTHO_SIZE_LOCK_HEIGHT mode</a>). Use this setting for resolution-independent 2D scenes.</p> 
+<p><b>SCENE_2D_TOPLEFT</b> - Orthographic camera, Y-down coordinate system with 0,0 coordinate in the top left corner of the screen. The orthographic mode of the camera is set to match the orthographic size to current resolution (see <a href="/learn/cameras">ORTHO_SIZE_VIEWPORT mode</a>). Use this setting for resolution-dependent UI scenes.</p>
 <p>To create a new scene, simply instantiate a Scene class and pass it the type of Scene you want to create. It will be automatically added to the SceneManager and will begin rendering to the front buffer on every render call.</p>
 <div class="codeh">C++</div>
-<pre><code class="prettyprint">Scene *scene = new Scene(Scene::SCENE_3D);
+<pre><code class="prettyprint">Scene *scene = new Scene(Scene::SCENE_2D);
 </code></pre>
 <div class="codeh">Lua</div>
-<pre><code class="prettyprint">scene = Scene(Scene.SCENE_3D)
+<pre><code class="prettyprint">scene = Scene(Scene.SCENE_2D)
 </code></pre>
-<h4>Adding entities to the scene.</h4>
-<h4>Scene cameras.</h4>
+<h4 id="adding">Adding entities to the scene.</h4>
+<p>By default a scene contains a single root entity called rootEntity. Everything rendered in the scene is rendered via this single root entity. To add your entities to the scene you can add them as children to the rootEntity or use the Scene's wrapper <b>addChild</b> method, which does the same thing.</p>
+<p>Alternatively, you can add an entity to another entity that is already added to the scene (using the addChild method), in which case, the child entity's transformations will be relative to its parent entity.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Scene *scene = new Scene(Scene::SCENE_2D);
+ScenePrimitive *box = new ScenePrimitive(ScenePrimitive::TYPE_VPLANE, 0.5, 0.5);
+scene->addChild(box);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">scene = Scene(Scene.SCENE_2D)
+box = ScenePrimitive(ScenePrimitive.TYPE_VPLANE, 0.5, 0.5)
+scene:addChild(box)</code></pre>
+<h4 id="transforming">Transforming entities.</h4>
+<p>Entities can be moved, scaled and rotated in 3 dimensions. Entities added as children to other entities inherit their transformations (unless the children's ignoreParentMatrix setting is set to true). Entity color can also be set by calling setColor or directly setting the color property of an entity. The entity color is used as a vertex color unless a mesh specifies that it wants to use per-vertex colors (see <a href="/learn/meshes">Rendering Meshes</a>).</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Scene *scene = new Scene(Scene::SCENE_2D);
+for(int i=0; i < 10; i++) {
+    ScenePrimitive *box = new ScenePrimitive(ScenePrimitive::TYPE_VPLANE, 0.12, 0.12);
+    box->setPosition(-0.5 + (i * 0.1), 0.0, 0.0);
+    box->setScale(1.0 - (i * 0.1), 1.0 - (i * 0.1), 1.0 - (i * 0.1));
+    box->setRoll(i * 20.0);
+    box->setColor(i * 0.1, 1.0, 1.0 - (i * 0.1), 1.0);
+    scene->addChild(box);
+}</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">scene = Scene(Scene.SCENE_2D)
+
+for i=0,10 do
+	box = ScenePrimitive(ScenePrimitive.TYPE_VPLANE, 0.12, 0.12)
+	box:setPosition(-0.5 + (i * 0.1), 0.0, 0.0)
+	box:setScale(1.0 - (i * 0.1), 1.0 - (i * 0.1), 1.0 - (i * 0.1))
+	box:setRoll(i * 20.0)
+	box:setColor(i * 0.1, 1.0, 1.0 - (i * 0.1), 1.0)
+	scene:addChild(box)
+end</code></pre>
+<p>See the <a href="/docs/class_polycode_1_1_entity.html">Entity</a> documentation for a full list of transform methods.</p>

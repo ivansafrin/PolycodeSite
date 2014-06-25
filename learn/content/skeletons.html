@@ -1,0 +1,36 @@
+<div class="page-header">
+        <h2>Skeletons and skeletal animation.</h2>
+</div>
+<p class="lead">Polycode can load skeletons and play back skeletal animation for SceneMesh instances. You can blend multiple animations together to create smooth animation transitions or combine animations.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#loading">Loading skeletons.</a></li>
+	<li><a href="#animation">Loading and playing animations.</a></li>
+	<li><a href="#blending">Blending animations.</a></li>
+</ul>
+<h4 id="loading">Loading skeletons.</h4>
+<p>Polycode uses a custom skeleton format (.skeleton), which you can convert assets to using the Polycode import tool (see Importing Assets). Skeletons are loaded via the Skeleton class and can be assigned to a SceneMesh via the <b>setSkeleton</b> method. Alternatively, you can call <b>loadSkeleton</b> directly on the SceneMesh instance.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">SceneMesh *dummy = new SceneMesh("dummy.mesh");
+Skeleton *skeleton = dummy->loadSkeleton("dummy.skeleton");
+</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">dummy = SceneMesh("dummy.mesh")
+skeleton = dummy:loadSkeleton("dummy.skeleton")</code></pre>
+<h4 id="animation">Loading and playing animations.</h4>
+<p>Animations in Polycode are stored in individual animation files in a custom file format (.anim), which you can import to using the Polycode import tool (see Importing Assets). Use the <b>loadSkeleton</b> method to load an animation file into the skeleton, providing a name for the loaded animation. Once loaded, you can play the animation using <b>setBaseAnimationByName</b>. This sets the base animation that is being played on loop by the skeleton. On top of this animation, you can blend other animations (see <a href="#blending">Blending animations</a>).</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">skeleton->addAnimation("idle", "idle.anim");
+skeleton->setBaseAnimationByName("idle");</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">skeleton:addAnimation("idle", "idle.anim")
+skeleton:setBaseAnimationByName("idle")</code></pre>
+<h4 id="blending">Blending animations.</h4>
+<p>Blending animations requires a base animation to be loaded and playing. To blend another animation on top of the base animation, use the <b>playAnimationByName</b> method, providing it a weight value from 0.0 to 1.0 as the second argument. You can blend multiple animations together using different weights.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">skeleton->addAnimation("run", "run.anim");
+skeleton->playAnimationByName("run", 0.5, false, false);
+</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">skeleton:addAnimation("run", "run.anim")
+skeleton:playAnimationByName("run", 0.5, false, false)</code></pre>
