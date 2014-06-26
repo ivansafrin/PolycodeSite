@@ -10,10 +10,8 @@ body, html {
 	margin-bottom: 0px;
 }
 
-@media (min-width: 968px) {
-  .container {
-    max-width: 930px;
-  }
+.container {
+	max-width: 1030px;
 }
 
 .list-group-item {
@@ -190,4 +188,18 @@ pre {
 
 .comm_cell {
 	text-align: center;
+}
+
+.limg_l {
+	float: left;
+	margin: 5px 20px 5px 20px;
+}
+
+.limg_r {
+	float: right;
+	margin: 5px 20px 5px 20px;
+}
+
+.limg_c {
+	margin: 5px auto 20px auto;
 }
