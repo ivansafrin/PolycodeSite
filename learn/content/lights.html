@@ -1,7 +1,7 @@
 <div class="page-header">
 <h2>Lights and shadows.</h2>
 </div>
-<p class="lead">Polycode allows you to create point and spot lights and use them to light entities and cast shadows via materials.</p>
+<p class="lead">Polycode allows you to create point and spot lights and use them to light entities and cast shadows.</p>
 <h4>Contents</h4>
 <ul>
 	<li><a href="#ide">Creating and using lights in the IDE.</a></li>
@@ -24,4 +24,12 @@ scene->addLight(light);</code></pre>
 <div class="codeh">Lua</div>
 <pre><code class="prettyprint">light = SceneLight(SceneLight.POINT_LIGHT, scene, 5.0)
 scene:addLight(light)</code></pre>
-<h4>Casting shadows</h4>
+<h4 id="shadows">Casting shadows</h4>
+<p>Spot lights can cast realtime shadow-mapped shadows on materials that support them.</p>
+<img class="limg_l" width="374" src="/learn/images/shadows_ide.png">
+<p>In order to receive shadows, a SceneMesh must be using a shader that supports shadows. Polycode comes with a default material that can receive shadows called DefaultWithShadows.</p>
+<p>To enable shadow casting on a light, you need to call <b>endableShadows(true, 256)</b> on the SceneLight instance. The second argument to this method is the shadow map resolution (more on that below). In the IDE, you can check the "Cast shadows" checkbox in the SceneLight properties.</p>
+<p>There are two parameters that control the quality of the shadows. One is the shadow map resolution and the other is the field of view of the spotlight camera that is used to render the depth image used to calculate shadows (see the <a href="http://en.wikipedia.org/wiki/Shadow_mapping">Shadow Mapping article on Wikipedia</a> for more details on how it works).</p>
+<img class="limg_r" width="374" src="/learn/images/shadows_quality.png">
+<p>The shadow map resolution setting controls the pixel resolution of the shadows are they are projected onto the material. The lower the resolutio, the more pixelated the shadows, but faster the shadow depth buffer rendering. The higher the resolution, the better the shadows look, but their rendering is slower. You can control how wide the shadow stretches in front of the spot light by changing the field of view of the spotlight camera. The wider the angle, the more it can see around the spotlight, but the more the resolution of the shadow map buffer is stretched across, making it more pixellated. Use this setting in conjunction with the spotlight angle setting to control the desired quality of the shadows.</p>
+<p>You can change the spotlight camera FOV using the <b>setShadowMapFOV</b> method in code or in the SceneLight properties in the IDE entity editor.</p>
