@@ -1,14 +1,20 @@
 <?
 	require_once("../site/header.php");
 ?>
-</div>
+
+<div class="whitepage">
 
 <div class="gal_feat">
-<iframe src="//player.vimeo.com/video/97270198?color=ffffff" width="900" height="506" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+	<iframe src="//player.vimeo.com/video/97270198?color=ffffff" width="100%" height="506" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+	<div class="gal_feat_detail">
+		<h2>Cleveland Games</h2>
+		<h5>Thu Tran, Ivan Safrin, Bobo Do and Jonathan Schenke</h5>
+		<p>Cleveland Games is a Kinect-based interactive installation launched as part of the new Tinkham Veale University Center in Cleveland's Case Western Reserve University. The installation features 6 rotating games which center around Cleveland's various historical and cultural landmarks.</p>
+		<p>Polycode was used for all aspects of the games' development. The 3D stages were laid out in the Polycode IDE and the games were prototyped in Lua and the final software was programmed using Polycode's C++ API. Polycode's networking API was used to send the Kinect's motion data to the main computer running the installation.</p>
+	</div>
 </div>
 
 <div class="feat gal_1">
-<div class="container">
 	<div class="row">
 		<div class="col-md-7">
 		<iframe width="100%" height="300" src="//www.youtube.com/embed/VaL6dSSZfs0" frameborder="0" allowfullscreen></iframe>
@@ -21,10 +27,8 @@
 		</div>
 	</div>
 </div>
-</div>
 
 <div class="feat gal_2">
-<div class="container">
 	<div class="row">
 		<div class="col-md-7">
 		<iframe src="//player.vimeo.com/video/75346270?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff" width="100%" height="300" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
@@ -37,10 +41,8 @@
 		</div>
 	</div>
 </div>
-</div>
 
 	<div class="feat gal_1">
-	<div class="container">
 	<div class="row">
 		<div class="col-md-7">
 		<iframe src="//player.vimeo.com/video/68710382?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff" width="100%" height="300" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
@@ -53,12 +55,9 @@
 		</div>
 	</div>
 	</div>
-	</div>
 
 
 	<div class="feat gal_2">
-	<div class="container">
-
 	<div class="row">
 		<div class="col-md-7">
 		<iframe src="//player.vimeo.com/video/35619973?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff" width="100%" height="300" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
@@ -70,13 +69,10 @@
 			<a target="_blank" href="http://www.ivansafrin.com/space-cruiser" class="btn btn-primary btn-lg" role="button">Project site</a>
 		</div>
 	</div>
-
-	</div>
 	</div>
 
 
 	<div class="feat gal_1">
-	<div class="container">
 	<div class="row">
 		<div class="col-md-7">
 		<iframe width="100%" height="300" src="//www.youtube.com/embed/IZRob8-XYSw" frameborder="0" allowfullscreen></iframe>
@@ -89,10 +85,8 @@
 		</div>
 	</div>
 	</div>
-	</div>
 
 	<div class="feat gal_2">
-	<div class="container">
 	<div class="row">
 		<div class="col-md-7">
 		<iframe width="100%" height="300" src="//www.youtube.com/embed/d_oz3wweXSY" frameborder="0" allowfullscreen></iframe>
@@ -104,11 +98,9 @@
 			<a target="_blank" href="http://forums.tigsource.com/index.php?topic=9701.0" class="btn btn-primary btn-lg" role="button">Project site</a>
 		</div>
 	</div>
-	</div>
-	</div>
+</div>
 
 
-<div class="container">
 <?
 	require_once("../site/footer.php");
 ?>

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 17.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="320px" height="320px" viewBox="0 0 320 320" enable-background="new 0 0 320 320" xml:space="preserve">
-<circle fill="#443D3C" cx="160" cy="160.001" r="160"/>
+<!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 320 320" enable-background="new 0 0 320 320" xml:space="preserve">
+<circle opacity="0.2" fill="#FFFFFF" cx="160" cy="160" r="151"/>
+<circle fill="#231D1C" cx="160" cy="160" r="139"/>
 <g>
-	<polygon fill="#E92629" points="251.097,184.664 226.089,199.347 226.089,93.005 251.408,79.611 	"/>
-	<polygon fill="#99519D" points="184.794,252.171 159.552,237.737 251.295,184.66 275.564,199.874 	"/>
-	<polygon fill="#FAE300" points="133.803,68.818 158.86,82.81 67.457,136.786 43.05,121.795 	"/>
-	<polygon fill="#F69C21" points="226.089,93.005 226.092,120.645 133.803,68.818 134.686,40.187 	"/>
-	<polygon fill="#447DC0" points="92.79,228.459 92.567,199.431 184.794,252.171 183.877,280.798 	"/>
-	<polygon fill="#6DBD46" points="67.374,136.802 92.325,122.02 92.754,228.361 67.487,241.858 	"/>
+	<polygon fill="#E92629" points="239.1,181.4 217.4,194.2 217.4,101.8 239.4,90.2 	"/>
+	<polygon fill="#99519D" points="181.5,240.1 159.6,227.5 239.3,181.4 260.4,194.6 	"/>
+	<polygon fill="#FAE300" points="137.2,80.8 159,92.9 79.6,139.8 58.4,126.8 	"/>
+	<polygon fill="#F69C21" points="217.4,101.8 217.4,125.8 137.2,80.8 138,55.9 	"/>
+	<polygon fill="#447DC0" points="101.6,219.5 101.4,194.3 181.5,240.1 180.7,264.9 	"/>
+	<polygon fill="#6DBD46" points="79.5,139.8 101.2,127 101.6,219.4 79.6,231.1 	"/>
 </g>
 </svg>
