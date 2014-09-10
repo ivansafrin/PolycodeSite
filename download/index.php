@@ -1,12 +1,8 @@
 <?
-	require_once("../site/header.php");
+	$gray=true; require_once("../site/header.php");
 ?>
 
-</div>
-
 <div class="whitepage">
-<div class="container">
-
 <h4 class="alert alert-warning">Attention! Polycode is in BETA! Crashes and bugs may occur!</h4>
 
 	  <div class="row" style="margin: 30px 0px 50px 0px">
@@ -30,8 +26,6 @@
 	</div>
 
 </div>
-</div>
-<div class="container">
 
 <?
 	require_once("../site/footer.php");

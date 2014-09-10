@@ -12,7 +12,7 @@
 Polycode's <a href="/docs/class_polycode_1_1_mesh.html">Mesh class</a> is the base for all mesh geometry in Polycode. It contains vertex information and a mesh type that defines how these vertices are rendered (as lines, points or polygons). The image below demonstrates the various mesh types and how they render their vertex data.</p>
 <center><img src="/learn/images/mesh_types.svg"/></center>
 <h4 id="creating">Creating meshes programatically.</h4>
-<p>To create and render a mesh, you need to create a SceneMesh instance and add it to your scene, then add vertices to its Mesh. Alternatively, you can create a Mesh first, and then initialize a SceneMesh (or multiple SceneMesh instances) with the Mesh. An important note is that you have to call dirtyArrays() on the Mesh after you make changes to it, so that its vertex arrays get rebuilt from the vertex data.
+<p>To create and render a mesh, you need to create a SceneMesh instance and add it to your scene, then add vertices to its Mesh. Alternatively, you can create a Mesh first, and then initialize a SceneMesh (or multiple SceneMesh instances) with the Mesh.</p>
 
 Let's look at creating and adding a simple single-quad mesh to a scene.</p>
 <div class="codeh">C++</div>
@@ -23,18 +23,16 @@ sceneMesh->getMesh()->addVertex(0.2, -0.2, 0.0);
 sceneMesh->getMesh()->addVertex(0.2, 0.2, 0.0);
 sceneMesh->getMesh()->addVertex(-0.2, 0.2, 0.0);
 sceneMesh->getMesh()->addVertex(-0.2, -0.2, 0.0);
-sceneMesh->getMesh()->dirtyArrays();
 
 scene->addChild(sceneMesh);</code></pre>
 <div class="codeh">Lua</div>
 <pre><code class="prettyprint">scene = Scene(Scene.SCENE_2D)
 sceneMesh = SceneMesh.SceneMeshWithType(Mesh.QUAD_MESH)
     
-sceneMesh:getMesh():addVertex(0.2, -0.2, 0.0, 0.0, 0.0)
-sceneMesh:getMesh():addVertex(0.2, 0.2, 0.0, 0.0, 0.0)
-sceneMesh:getMesh():addVertex(-0.2, 0.2, 0.0, 0.0, 0.0)
-sceneMesh:getMesh():addVertex(-0.2, -0.2, 0.0, 0.0, 0.0)
-sceneMesh:getMesh():dirtyArrays();
+sceneMesh:getMesh():addVertex(0.2, -0.2, 0.0)
+sceneMesh:getMesh():addVertex(0.2, 0.2, 0.0)
+sceneMesh:getMesh():addVertex(-0.2, 0.2, 0.0)
+sceneMesh:getMesh():addVertex(-0.2, -0.2, 0.0)
     
 scene:addChild(sceneMesh)</code></pre>
 <p>When adding vertices to a mesh, it's important to note that they have to be added in counter-clockwise order from the front of each face. If you want a face to be visible from both sides, you need to disable backface culling on the SceneMesh instance (backfaceCulled = false).</p>

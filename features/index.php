@@ -2,7 +2,6 @@
 	require_once("../site/header.php");
 ?>
 	</div>
-
 	<div class="feat feat_1">
 	<div class="container">
 	  <div class="row">
@@ -38,7 +37,7 @@
 		<div class="centerh"><h2 class="fh3">Polycode IDE.</h2></div>
 
 	  <div class="row">
-		<div><img src="/images/feature_ide_big.png" width="100%"/></div>
+		<div style="width: 100%; text-align: center"><img src="/images/feature_ide_big.png" width="80%"/></div>
 		<div>
 			<p>Polycode is distributed as a C++ library in tandem with a standalone IDE. You can...</p>
 			<ul>
@@ -153,7 +152,6 @@
 	  </div>
 	</div>
 	</div>
-
 
 	<div class="container">
 <?

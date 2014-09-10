@@ -4,6 +4,7 @@
 <title>Polycode</title>
 <link rel="shortcut icon" href="/favicon.ico">
 <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="/css/main.css">
@@ -20,7 +21,12 @@
 
 </script>
 </head>
-<body>
+<? if($gray == true) {
+	echo "<body class=\"gray_container\">";
+	} else {
+	echo "<body class=\"blue_container\">";
+	}
+?>
 <div class="navbar navbar-inverse navbar-static-top" role="navigation">
 	  <div class="container">
 		<div class="navbar-header">

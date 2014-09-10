@@ -1,0 +1,20 @@
+<div class="page-header">
+        <h2>Events.</h2>
+</div>
+<p class="lead">Polycode provides a simple event system that can be used to send and receive notifications between classes. It is used internally in Polycode for all asynchronous callbacks, such as input events and physics scene collision callbacks. The event system is extended into the Lua bindings, so you can listen to events generated in C++ from Lua.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#overview">Events overview.</a></li>
+	<li><a href="#sending">Sending events (C++).</a></li>
+	<li><a href="#receiving">Receiving events (C++).</a></li>
+	<li><a href="#lua">Events in Lua.</a></li>
+</ul>
+<h4 id="overview">Events overview.</h4>
+<p>The Polycode event system is based around <b>EventDispatcher</b> and <b>EventListener</b> classes. If you've ever done any ActionScript programming, this system will be familiar to you. To send events, a class must subclass (or encapsulate, if you're into composition) the <b>EventDispatcher</b> class. To listen to that class's events, other classes must subclass the <b>EventHandler</b> class and add themselves as event listeners to the event dispatcher for a particular event type and implement the <b>handleEvent</b> method. When an event is dispatched from the event dispatcher, the <b>handleEvent</b> method will be called on all of the event handlers that are registered as listeners for that event type, passing the dispatched event to them.</p>
+<p>Many common superclasses in Polycode, such as Entity, already subclass the <b>EventDispatcher</b> class.</p>
+<h4 id="sending">Sending events (C++).</h4>
+<p>To be able to send Polycode events, the class sending the events must subclass the <b>EventDispatcher</b> class. To send an event, you call the <b>dispatchEvent</b> method, passing it an event type and a pointer to an <b>Event</b> class, which will be passed to all the listeners that are listening for that event type.</p>
+<p><b>The Event class will be automatically deleted by the EventDispatcher after being sent to all of the listeners, so the listeners must not depend on it being around after the event callback and the EventDispatcher sublcass must not try to delete the event manually!</b></p>
+<p>If your event is just a notification and doesn't need to send any data, you can just send an instance of the stock <b>Event</b> class. If you do need to send data with the event, you can subclass the Event class and add whatever data you need to it, but the event handler will have to cast the Event class to the appropriate type. To avoid RTTI, you can set astring parameter in Event called <b></b></p>
+<h4 id="receiving">Receiving events (C++).</h4>
+<p></p>

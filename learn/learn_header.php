@@ -1,7 +1,4 @@
-</div>
-
 <div class="whitepage">
-<div class="container">
 
 	<div class="row">
 	<div class="col-md-3" style="padding-top: 50px">
