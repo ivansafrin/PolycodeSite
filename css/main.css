@@ -1,14 +1,11 @@
 
 body, html {
 	background-color: white;
-	font-family: 'Open Sans', sans-serif;
-	font-weight: 400;
-	font-size: 14px;
 }
 
 
 .container {
-	max-width: 930px;
+	max-width: 980px;
 }
 
 .list-group-item {
@@ -21,15 +18,19 @@ body, html {
    border-color: transparent;
 }
 
-.navbar-nav li {
-	font-family: 'Montserrat', sans-serif;
-	font-weight: 700;
-	color: white;
+.navbar-nav li a:visited, navbar-nav li a:link{
+	color: rgba(255,255,255, 0.7);
+}
+.navbar-nav li a {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 300;
 	font-size: 16px;
 }
 
 
 .index-main {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 300;
 	color: white;
 	text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 	padding: 40px 15px;
@@ -42,9 +43,15 @@ body, html {
 	width: 100%;
 }
 
+.fh2 {
+	color: rgba(255,255,255, 0.85);
+	font-weight: 300;
+	padding-left: 10px;
+	padding-top: 0px;
+	margin-top: 0px;
+}
+
 .fh3 {
-	color: white;
-	text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 	font-weight: normal;
 	padding-left: 10px;
 	padding-top: 0px;
@@ -71,10 +78,18 @@ body, html {
 }
 
 .feat {
-	padding: 40px 0px 40px 0px;
+	padding: 50px 0px 0px 0px;
+	border-width: 0px 0px 1px 0px;
+}
+
+.gal_feat {
+	text-align: center;
 }
 
 .feat p {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 300;
+	font-size: 15px;
 	padding: 0px 10px 0px 10px;
 	color: black;
 }
@@ -126,13 +141,12 @@ background-image: -ms-linear-gradient(bottom, #969696 0%, #FFFFFF 100%);
 background-image: linear-gradient(to bottom, #969696 0%, #FFFFFF 100%);
 
 	width: 100%;
-	background-size: 100% 900px;
+	background-size: 100% 100%;
 	background-repeat: no-repeat;
 
 }
 
 .blue_container {
-
 	background-image: -webkit-gradient(
 	linear,
 	left top,
@@ -148,7 +162,7 @@ background-image: -ms-linear-gradient(bottom, #355FB5 0%, #37A2BF 36%, #FFFFFF 1
 background-image: linear-gradient(to bottom, #355FB5 0%, #37A2BF 36%, #FFFFFF 100%);
 
 	width: 100%;
-	background-size: 100% 1100px;
+	background-size: 100% 1200px;
 	background-repeat: no-repeat;
 }
 
@@ -172,12 +186,17 @@ background-image: linear-gradient(to bottom, #355FB5 0%, #37A2BF 36%, #FFFFFF 10
 .feat_4 {
 }
 .feat_4 p, .feat_4 ul {
-	color: #d1c8db;
 }
 
 .centerh {
 	text-align: center;
-	margin-bottom: 30px;
+	margin-bottom: 10px;
+}
+
+.whitepage h2 {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 300;
+	font-size: 32px;
 }
 
 .whitepage {
@@ -192,14 +211,14 @@ background-image: linear-gradient(to bottom, #355FB5 0%, #37A2BF 36%, #FFFFFF 10
 	margin-top: 30px;
 }
 
-pre {
+code {
 	font-size: 12px;
 }
 
 .codeh {
 	color: #ababab;
-	font-family: 'Montserrat', sans-serif;
-	font-weight: 700;}
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 300;}
 
 /* Carousel base class */
 .carousel {

@@ -6,12 +6,12 @@
 	<div class="container">
 	  <div class="row">
 		<div class="col-md-8">
-			<h3 class="fh3">Cross-platform.</h3>
+			<h3 class="fh2">Cross-platform app development in C++ or Lua.</h3>
 			<p>Polycode's core is written in C++ and currently runs on Mac, Windows and Linux with iOS and Android support planned in the future. All platform-specific functionality is abstracted into a cross-platform core and implemented natively on each platform, so the same C++ code will compile on each supported platform out of the box.</p>
-			<p>If Polycode is used as a purely scripted framework via its IDE, applications can be exported directly to all supported platforms.</p>
+			<p>Polycode can also be used as a purely scripted Lua framework via the Polycode IDE. Applications developed in Lua can be exported directly to all supported platforms.</p>
 		</div>
 		<div class="col-md-4">
-			<img src="/images/feature_crossplatform.svg"/>
+			<img style="padding-top: 40px" height="170px" src="/images/feature_crossplatform.svg"/>
 		</div>
 	  </div>
 	</div>
@@ -21,10 +21,10 @@
 	<div class="container">
 	  <div class="row">
 		<div class="col-md-4">
-			<img src="/images/feature_opensource.svg"/>
+			<img style="padding-left: 70px" height="150" src="/images/feature_opensource.svg"/>
 		</div>
 		<div class="col-md-8">
-			<h3 class="fh3">Free and open source.</h3>
+			<h3 class="fh2">Free and open source.</h3>
 			<p>Polycode is completely free and open source under the MIT License. All of Polycode's development happens publicly on Github and community pull requests are regularly reviewed.</p>
 			<p>Even this website is open source and setup for community improvement.</p>
 		</div>
@@ -34,10 +34,10 @@
 
 	<div class="feat feat_3">
 	<div class="container">
-		<div class="centerh"><h2 class="fh3">Polycode IDE.</h2></div>
+		<div class="centerh"><h2 class="fh2">Polycode IDE.</h2></div>
 
 	  <div class="row">
-		<div style="width: 100%; text-align: center"><img src="/images/feature_ide_big.png" width="80%"/></div>
+		<div style="width: 100%; text-align: center"><img src="/images/feature_ide_big.png" width="100%"/></div>
 		<div>
 			<p>Polycode is distributed as a C++ library in tandem with a standalone IDE. You can...</p>
 			<ul>
@@ -82,7 +82,7 @@
 	</div>
 	</div>
 
-	<div class="feat feat_1">
+	<div class="feat feat_4">
 	<div class="container">
 	  <div class="row">
 		<div class="col-md-8">
@@ -96,7 +96,7 @@
 	</div>
 	</div>
 
-	<div class="feat feat_2">
+	<div class="feat feat_4">
 	<div class="container">
 	  <div class="row">
 		<div class="col-md-4">
@@ -138,7 +138,7 @@
 	</div>
 	</div>
 
-	<div class="feat feat_1">
+	<div class="feat feat_4">
 	<div class="container">
 	  <div class="row">
 		<div class="col-md-8">

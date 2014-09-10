@@ -3,6 +3,10 @@
 ?>
 </div>
 
+<div class="gal_feat">
+<iframe src="//player.vimeo.com/video/97270198?color=ffffff" width="900" height="506" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+</div>
+
 <div class="feat gal_1">
 <div class="container">
 	<div class="row">
