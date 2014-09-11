@@ -23,9 +23,10 @@ body {
    border-color: transparent;
 }
 
-.navbar-nav li a:visited, navbar-nav li a:link{
-	color: rgba(255,255,255, 0.7);
+.navbar-inverse .navbar-nav>li>a {
+	color: rgba(255,255,255,0.5);
 }
+
 .navbar-nav li a {
 	font-family: 'Open Sans', sans-serif;
 	font-weight: 300;

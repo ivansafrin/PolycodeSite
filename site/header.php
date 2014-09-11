@@ -45,6 +45,7 @@
 			<li><a href="/learn">Learn</a></li>
 			<li><a href="/docs">Docs</a></li>
 			<li><a href="/community">Community</a></li>
+			<li><a href="/getinvolved">Get Involved</a></li>
 		  </ul>
 		</div><!--/.nav-collapse -->
 	  </div>
