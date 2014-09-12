@@ -44,6 +44,8 @@ body {
 }
 
 .footer {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 300;
 	margin-top: 100px;
 	text-align: center;
 	width: 100%;
@@ -177,17 +179,18 @@ background-image: -webkit-gradient(
 	linear,
 	left top,
 	left bottom,
-	color-stop(0, #37008A),
-	color-stop(1, #F000B0)
+	color-stop(0, #680D78),
+	color-stop(0.65, #FF2487),
+	color-stop(1, #FFFFFF)
 );
-background-image: -o-linear-gradient(bottom, #37008A 0%, #F000B0 100%);
-background-image: -moz-linear-gradient(bottom, #37008A 0%, #F000B0 100%);
-background-image: -webkit-linear-gradient(bottom, #37008A 0%, #F000B0 100%);
-background-image: -ms-linear-gradient(bottom, #37008A 0%, #F000B0 100%);
-background-image: linear-gradient(to bottom, #37008A 0%, #F000B0 100%);
+background-image: -o-linear-gradient(bottom, #680D78 0%, #FF2487 65%, #FFFFFF 100%);
+background-image: -moz-linear-gradient(bottom, #680D78 0%, #FF2487 65%, #FFFFFF 100%);
+background-image: -webkit-linear-gradient(bottom, #680D78 0%, #FF2487 65%, #FFFFFF 100%);
+background-image: -ms-linear-gradient(bottom, #680D78 0%, #FF2487 65%, #FFFFFF 100%);
+background-image: linear-gradient(to bottom, #680D78 0%, #FF2487 65%, #FFFFFF 100%);
 
 	width: 100%;
-	background-size: 100% 100%;
+	background-size: 100% 800px;
 	background-repeat: no-repeat;
 }
 

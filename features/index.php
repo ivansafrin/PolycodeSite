@@ -12,7 +12,7 @@
 			<p>Polycode can also be used as a purely scripted Lua framework via the Polycode IDE. Applications developed in Lua can be exported directly to all supported platforms.</p>
 		</div>
 		<div class="col-md-4">
-			<img style="padding-top: 40px" height="170px" src="/images/feature_crossplatform.svg"/>
+			<img class="hidden-sm hidden-xs" style="padding-top: 40px" height="170px" src="/images/feature_crossplatform.svg"/>
 		</div>
 	  </div>
 	</div>
@@ -22,7 +22,7 @@
 	<div class="container">
 	  <div class="row">
 		<div class="col-md-4">
-			<img style="padding-left: 70px" height="150" src="/images/feature_opensource.svg"/>
+			<img class="hidden-sm hidden-xs" style="padding-left: 70px" height="150" src="/images/feature_opensource.svg"/>
 		</div>
 		<div class="col-md-8">
 			<h3 class="fh2">Free and open source.</h3>
@@ -66,7 +66,7 @@
 
 	  <div class="row fhs">
 		<div class="col-md-4">
-			<img style="margin-top: 20px" src="/images/feature_materials.png" height="140"/>
+			<img style="margin-top: 20px" src="/images/features_materials.svg" height="140"/>
 		</div>
 		<div class="col-md-8">
 			<h4 class="fh3">Materials and shaders.</h4>
@@ -91,7 +91,7 @@
 			<p>Polycode supports sound playback from WAV and OGG formats and custom audio data buffers, as well as sound recording from sytem's sound input devices. Positional 2D and 3D sound is also supported by the scene graph with positional sound placement support in the Polycode IDE.</p>
 		</div>
 		<div class="col-md-4">
-			<img src="/images/feature_sound.svg" height="120px"/>
+			<img class="hidden-sm hidden-xs" style="margin-left: 50px" src="/images/feature_sound.svg" height="140px"/>
 		</div>
 	  </div>
 	</div>
@@ -101,7 +101,7 @@
 	<div class="container">
 	  <div class="row">
 		<div class="col-md-4">
-			<img src="/images/feature_input.svg" width="250px"/>
+			<img class="hidden-sm hidden-xs" style="margin-left: 50px" src="/images/feature_input.svg" width="200px"/>
 		</div>
 		<div class="col-md-8">
 			<h3 class="fh3">Input.</h3>
@@ -119,7 +119,7 @@
 			<p>UDP-based peer-to-peer or server-client networking system with reliable packet support (currently C++ only).</p>
 		</div>
 		<div class="col-md-4">
-			<img src="/images/feature_networking.svg" height="120px"/>
+			<img class="hidden-sm hidden-xs" src="/images/feature_networking.svg" height="120px"/>
 		</div>
 	  </div>
 	</div>
@@ -130,7 +130,7 @@
 	<div class="centerh"><h2 class="fh3">UI.</h2></div>
 
 	  <div class="row">
-		<div style="margin-bottom: 30px"><img src="/images/feature_ui.svg" width="100%"/></div>
+		<div class="hidden-sm hidden-xs" style="margin: 10px auto 30px auto; width: 600px; display: block"><img src="/images/feature_ui.svg" /></div>
 		<div>
 			<p>Polycode comes with a UI module that includes buttons, checkboxes, slides, color pickers, file dialogs, scroll bars, text input, menus and windows. It's fully skinnable and comes with light and dark default themes which include a high-reslution retina-ready version.</p>
 		</div>
@@ -148,7 +148,7 @@
 			<p>Polycode also includes a 2D physics module which integrates Box2D with its scene graph for automatic 2D physics simulation and collision detection.</p>
 		</div>
 		<div class="col-md-4">
-			<img src="/images/feature_physics.svg" height="120px"/>
+			<img style="margin-top: 30px" class="hidden-sm hidden-xs" src="/images/feature_physics.svg" height="120px"/>
 		</div>
 	  </div>
 	</div>
