@@ -20,11 +20,12 @@
 
 </script>
 </head>
-<? if($gray == true) {
-	echo "<body class=\"gray_container\">";
-	} else {
-	echo "<body class=\"blue_container\">";
+<?
+	if(!isset($body_type)) {
+		$body_type = "gray";
 	}
+
+	echo "<body class=\"".$body_type."_container\">";
 ?>
 <div class="navbar navbar-inverse navbar-static-top" role="navigation">
 	  <div class="container">

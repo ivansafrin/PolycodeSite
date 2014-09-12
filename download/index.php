@@ -1,5 +1,6 @@
 <?
-	$gray=true; require_once("../site/header.php");
+	$body_type = "blue";
+	require_once("../site/header.php");
 ?>
 
 <div class="whitepage" style="padding-left: 10%; padding-right: 10%">
