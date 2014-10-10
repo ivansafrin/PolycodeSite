@@ -10,11 +10,76 @@
 	<li><a href="#lua">Events in Lua.</a></li>
 </ul>
 <h4 id="overview">Events overview.</h4>
-<p>The Polycode event system is based around <b>EventDispatcher</b> and <b>EventListener</b> classes. If you've ever done any ActionScript programming, this system will be familiar to you. To send events, a class must subclass (or encapsulate, if you're into composition) the <b>EventDispatcher</b> class. To listen to that class's events, other classes must subclass the <b>EventHandler</b> class and add themselves as event listeners to the event dispatcher for a particular event type and implement the <b>handleEvent</b> method. When an event is dispatched from the event dispatcher, the <b>handleEvent</b> method will be called on all of the event handlers that are registered as listeners for that event type, passing the dispatched event to them.</p>
+<p>The Polycode event system is based around <b>EventDispatcher</b> and <b>EventListener</b> classes. If you've ever done any ActionScript programming, this system will be familiar to you. To send events, a class must subclass the <b>EventDispatcher</b> class. To listen to that class's events, other classes must subclass the <b>EventHandler</b> class and add themselves as event listeners to the event dispatcher for a particular event type and implement the <b>handleEvent</b> method. When an event is dispatched from the event dispatcher, the <b>handleEvent</b> method will be called on all of the event handlers that are registered as listeners for that event type, passing the dispatched event to them.</p>
 <p>Many common superclasses in Polycode, such as Entity, already subclass the <b>EventDispatcher</b> class.</p>
 <h4 id="sending">Sending events (C++).</h4>
 <p>To be able to send Polycode events, the class sending the events must subclass the <b>EventDispatcher</b> class. To send an event, you call the <b>dispatchEvent</b> method, passing it an event type and a pointer to an <b>Event</b> class, which will be passed to all the listeners that are listening for that event type.</p>
+<pre><code class="prettyprint">dispatchEvent(new Event(), Event::COMPLETE_EVENT);</code></pre>
 <p><b>The Event class will be automatically deleted by the EventDispatcher after being sent to all of the listeners, so the listeners must not depend on it being around after the event callback and the EventDispatcher sublcass must not try to delete the event manually!</b></p>
-<p>If your event is just a notification and doesn't need to send any data, you can just send an instance of the stock <b>Event</b> class. If you do need to send data with the event, you can subclass the Event class and add whatever data you need to it, but the event handler will have to cast the Event class to the appropriate type. To avoid RTTI, you can set astring parameter in Event called <b></b></p>
+<p>If your event is just a notification and doesn't need to send any data, you can just send an instance of the stock <b>Event</b> class. The stock Event class provides a few predefined commonly used event types, but you can of course use any integer you want. If you do need to send data with the event, you can subclass the Event class and add whatever data you need to it, but the event handler will have to cast the Event class to the appropriate type. You must set a string parameter in your Event subclass called eventType, so that event handlers that handle multiple types of events know how to cast the Event subclass pointer. Most of the time you don't have to do the string comparison check as single event dispatchers generally dispatch only one kind of event.<b></b></p>
 <h4 id="receiving">Receiving events (C++).</h4>
-<p></p>
+<p>To receive events in C++, a class must subclass the <b>EventHandler</b> class and impement the <b>handleEvent</b> method. An EventHandler subclass can then add itself as a listener for specific events to an event dispatcher class using <b>addEventListener</b>. When the dispatcher dispatches an event that the handler is listening to, its handleEvent method will be called and the event will be passed to it by the event dispatcher.</p>
+<p>Here is an example of listening to trigger events from the Polycode timer class. First we subclass EventHandler in our class and create a new Timer that fires every 500ms somewhere in the class and add ourselves as a listener.</p>
+<pre><code class="prettyprint">timer = new Timer(true, 500.0); 
+timer->addEventListener(this, Timer::EVENT_TRIGGER);</code></pre>
+<p>Then in our handleEvent method, we check if the dispatcher of the event is our timer. Since we only registered for one event type (and the Timer only broadcasts one type of event), we don't even need to check for the event type.</p>
+<pre><code class="prettyprint">void ExampleApp::handleEvent(Event *event) {
+    if(event->getDispatcher() == timer) {
+        cout << "TRIGGER!\n";
+    }
+}</code></pre>
+<p>If we are listening to multiple events from multiple dispatchers, we need to check the dispatcher and the event type. If we know that a certain event dispatcher is sending a certain type of event, we can cast the Event pointer to this event type to get access to the extra event data. Here's an example of handleEvent in a class that is listening for multiple input events from Polycode.</p>
+<pre><code class="prettyprint">void PolycodeTemplateApp::handleEvent(Event *event) {
+    if(event->getDispatcher() == core->getInput()) {
+        InputEvent *inputEvent = (InputEvent*) event;
+        switch(event->getEventCode()) {
+            case InputEvent::EVENT_KEYDOWN:
+                cout << "PRESSED KEY:" << inputEvent->keyCode() << endl;
+            break;
+            case InputEvent::EVENT_MOUSEDOWN:
+                cout << "CLICKED BUTTON:" << inputEvent->mouseButton << endl;
+            break;
+        }
+    }
+}</code></pre>
+<h4 id="lua">Events in Lua.</h4>
+<p>The event system in Lua is designed to be compatible with the events in C++ and it functions almost exactly the same, except that it allows us to add specific functions as event handlers. Here is an example of listening to trigger events from a Polycode Timer class from Lua.</p>
+<pre><code class="prettyprint">function onTimer(t, event)
+	print("TRIGGER!")
+end
+
+timer = Timer(true, 500)
+timer:addEventListener(nil, onTimer, Timer.EVENT_TRIGGER)</code></pre>
+<p>The syntax is almost exactly the same as in C++, except we are passing it a specific function as a callback. The first parameter to addEventListener can be nil or it can be used to pass other data as the first argument to the callback function. Because of the way that classes work in Lua, this system allows us to pass a class instance function as a callback function by passing the class instance as the first argument (class functions in Lua pass the class instance invisibly as the first argument).
+<pre><code class="prettyprint">class "TimerApp"
+
+function TimerApp:TimerApp()
+	self.timer = Timer(true, 500)
+	self.timer:addEventListener(self, self.onTimer, Timer.EVENT_TRIGGER)
+end
+
+function TimerApp:onTimer(event)
+	print("TRIGGER!")
+end
+
+timerApp = TimerApp()</code></pre>
+<p>Dispatching events in Lua works the same way. We subclass an EventDispatcher class and use <b>dispatchEvent</b> to send our events. In the example below, we modify our Timer app to dispatch its own event when it handles the Timer's trigger event.</p>
+<pre><code class="prettyprint">
+class "TimerApp" (EventDispatcher)
+
+function TimerApp:TimerApp()
+	self.timer = Timer(true, 500)
+	self.timer:addEventListener(self, self.onTimer, Timer.EVENT_TRIGGER)
+end
+
+function TimerApp:onTimer(event)
+	self:dispatchEvent(Event(), Event.CHANGE_EVENT)
+end
+
+timerApp = TimerApp()
+
+function onTimerAppEvent(t, event)
+	print("TRIGGER!")
+end
+
+timerApp:addEventListener(nil, onTimerAppEvent, Event.CHANGE_EVENT)</code></pre>
