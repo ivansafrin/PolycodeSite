@@ -1,0 +1,155 @@
+<div class="page-header">
+        <h2>Handling input.</h2>
+</div>
+<p class="lead">Polycode provides keyboard, mouse, joystick and touch handling on platforms where they are supported. You can handle input by listening to events dispatched by Polycode (see <a href="/learn/events">Event System</a>) in C++ or Lua, in Lua by implementing global functions that are called automatically by the Lua binding system or by checking the input state via the CoreInput class.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#overview">Input overview</a></li>
+	<li><a href="#keyboard">Keyboard input.</a></li>
+	<li><a href="#mouse">Mouse input.</a></li>
+	<li><a href="#joystick">Joystick input.</a></li>
+	<li><a href="#touch">Multi-touch input.</a></li>
+</ul>
+<h4 id="overview">Input overview.</h4>
+<p>The center of the input system in Polycode is the CoreInput class, which is accessed via CoreServices or from the Core directly. It dispatches events (see <a href="/learn/events">Event System</a>) for all input that happens in the application. For each input event, it dispatches an InputEvent class, which contains information about the input event, such as which button was pressed or what the new mouse position is. In Lua, Polycode also provides a way to handle input without dealing with events by automatically calling specific global Lua functions. </p>
+<p>CoreInput also provides a way to check input state directly at any time, such as seeing if a key or a mouse button is currently being pressed.</p>
+<h4 id="keyboard">Keyboard input.</h4>
+<p>Polycode dispatches keyboard key press and release events and allows for checking the pressed state of any keyboard key. Keyboard input events contain information about which key was pressed or released and their corresponding character codes for text input.</p>
+<p>To listen to keyboard input via events, you must add an event listener to CoreInput:</p>
+<p><b>InputEvent::EVENT_KEYDOWN</b> - for key presses.</p>
+<p><b>InputEvent::EVENT_KEYUP</b> - for key releases.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Services()->getInput()->addEventListener(this, InputEvent::EVENT_KEYDOWN);
+Services()->getInput()->addEventListener(this, InputEvent::EVENT_KEYUP);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">Services.Input:addEventListener(nil, onKeyDownEvent, InputEvent.EVENT_KEYDOWN)
+Services.Input:addEventListener(nil, onKeyUpEvent, InputEvent.EVENT_KEYUP)</code></pre>
+<p>When handling the event, the keyboard key that was pressed or released will be passed as part of CoreInput's InputEvent, which you have to cast Event to when you are handling events dispatched from CoreInput. You can get the event key using the keyCode() method of InputEvent. Keys are defined as a PolyKEY enum for each key on the keyboard and all start with KEY_ followed by the name of the key, such as KEY_SPACE or KEY_a. Refer to PolyInputKeys.h for the full list of keys.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">void ExampleApp::handleEvent(Event *event) {
+    if(event->getDispatcher() == Services()->getInput()) {
+        InputEvent *inputEvent = (InputEvent*) event;
+        switch(event->getEventCode()) {
+            case InputEvent::EVENT_KEYDOWN:
+                switch(inputEvent->keyCode()) {
+                    case KEY_LEFT:
+                        cout << "LEFT WAS PRESSED!\n";
+                    break;
+                }
+            break;
+        }
+    }
+}</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">function onKeyDownEvent(t, event)
+	local inputEvent = safe_cast(event, InputEvent)
+	if inputEvent:keyCode() == KEY_LEFT then
+		print("LEFT WAS PRESSED")
+	end
+end</code></pre>
+<p>If what you are interested in is the character code being typed on the keyboard (for example if you are making a text input field) and not the key itself, you can use the <b>getCharCode()</b> method of InputEvent to see what character was typed.</p>
+<p>You can also check if a key is currently being pressed by calling the <b>getKeyState</b> method of CoreInput for a specific key you want to check.</b>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">if(Services()->getInput()->getKeyState(KEY_LEFT)) {
+    // left is down
+}</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">if Services.Input:getKeyState(KEY_LEFT) then
+	-- left is down
+end</code></pre>
+<p>Alternatively, in Lua, you can also implement a global function called <b>onKeyDown</b> for presses and <b>onKeyUp</b> for releases, which will be called automatically on keyboard input.</p>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">function onKeyDown(key)
+	if key == KEY_LEFT then
+		print("LEFT WAS PRESSED")
+	end
+end</code></pre>
+<h4 id="mouse">Mouse input.</h4>
+<p>Polycode dispatches events for mouse movement, button presses and mouse wheel movement (mouse wheel presses come in as a mouse button press).
+<p>To listen to mouse input via events, you must add an event listener to CoreInput:</p>
+<p><b>InputEvent::EVENT_MOUSEMOVE</b> - for mouse movement</p>
+<p><b>InputEvent::EVENT_MOUSEDOWN</b> - for mouse button presses</p>
+<p><b>InputEvent::EVENT_MOUSEUP</b> - for mouse button releases</p>
+<p><b>InputEvent::EVENT_MOUSEWHEEL_UP</b> - for mousewheel up movement</p>
+<p><b>InputEvent::EVENT_MOUSEWHEEL_DOWN</b> - for mousewheel down movement.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Services()->getInput()->addEventListener(this, InputEvent::EVENT_MOUSEMOVE);
+Services()->getInput()->addEventListener(this, InputEvent::EVENT_MOUSEDOWN);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">Services.Input:addEventListener(nil, onMouseMoveEvent, InputEvent.EVENT_MOUSEMOVE)
+Services.Input:addEventListener(nil, onMouseDownEvent, InputEvent.EVENT_MOUSEDOWN)</code></pre>
+<p>When handling mouse events, the input event will contain the mouse position (in pixels) and which mouse button was pressed or released. The mouse button is represented by an index with 0 being the left mouse button, 1 being right mouse button, 2 being the middle (or mouse wheel) and higher indexes for mice that support more than 3 buttons.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">void ExampleApp::handleEvent(Event *event) {
+    if(event->getDispatcher() == core->getInput()) {
+        InputEvent *inputEvent = (InputEvent*) event;
+        switch(event->getEventCode()) {
+            case InputEvent::EVENT_MOUSEMOVE:
+                cout << "MOUSE X:" << inputEvent->mousePosition.x << endl;
+                cout << "MOUSE Y:" << inputEvent->mousePosition.y << endl;
+            break;
+            case InputEvent::EVENT_MOUSEDOWN:
+                cout << "Mouse button:" << inputEvent->mouseButton << endl;
+            break;
+        }
+    }
+}</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">function onMouseMoveEvent(t, event)
+	local inputEvent = safe_cast(event, InputEvent)
+	print("MOUSE X:"..inputEvent.mousePosition.x)
+	print("MOUSE Y:"..inputEvent.mousePosition.y)
+end
+
+function onMouseDownEvent(t, event)
+	local inputEvent = safe_cast(event, InputEvent)
+	print("Mouse button:"..inputEvent.mouseButton)
+end</code></pre>
+<p>If you just want the delta of the mouse movement, for exampe if you are bulding a mouse-controlled first person game, you can use the <b>getMouseDelta()</b> method of CoreInput to get the delta of the changed mouse position after a mouse move event.</p>
+<p>You can also check if a mouse button is currently being pressed by calling the <b>getMouseButtonState</b> method of CoreInput for a specific mouse button you want to check.</b>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">if(Services()->getInput()->getMouseButtonState(0)) {
+    // left mouse button is down
+}</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">if Services.Input:getMouseButtonState(0) then
+	-- left mouse button is down
+end</code></pre>
+<p>Alternatively, in Lua, you can also implement a global function called <b>onMouseDown</b> for mouse button presses, <b>onMouseUp</b> for releases and <b>onMouseMove</b> for mouse movement, which will be called automatically on mouse input.</p>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">function onMouseDown(button, x, y)
+	if button == 0 then
+		print("LEFT MOUSE CLICK AT "..x..","..y)
+	end
+end</code></pre>
+<h4 id="joystick">Joystick input.</h4>
+<p>TBD</p>
+<h4 id="touch">Multi-touch input.</h4>
+<p>Polycode supports multi-touch input on supported platforms. On desktops, multi-touch is supported natively in Windows versions 7 and above and on all platforms via the TUIO module.</p>
+<p>Polycode dispatches input events when touches begin, move or end. To listen to touch events, you must add an event listener to CoreInput: </p>
+<p><b>InputEvent::EVENT_TOUCHES_BEGAN</b> - for new touches (when a finger first touches the screen).</p>
+<p><b>InputEvent::EVENT_TOUCHES_MOVED</b> - when touches move (when a finger moves without being lifted).</p>
+<p><b>InputEvent::EVENT_TOUCHES_ENDED</b> - when touches end (a finger is lifted from the screen).</p>
+
+<p>When handling touch input, the InputEvent will contain information about the touch that the event pertains to, as well as all the other touches that are happening at the moment. Information for each touch is stored in the <b>TouchInfo</b> class, which contains a unique numeric id of the touch and its position. TouchInfo for the touch that the even is being generated for is stored in the <b>touch</b> member of InputEvent and all the other concurrent touches are stored in the <b>touches</b> vector of TouchInfo classes in InputEvent.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">void ExampleApp::handleEvent(Event *event) {
+    if(event->getDispatcher() == core->getInput()) {
+        InputEvent *inputEvent = (InputEvent*) event;
+        switch(event->getEventCode()) {
+            case InputEvent::EVENT_TOUCHES_BEGAN:
+                cout << "TOUCH BEGAN (" << inputEvent->touch.id << ")\n";
+            break;
+            case InputEvent::EVENT_TOUCHES_MOVED:
+                cout << "CURRENT TOUCHES:\n";
+                for(int i=0; i < inputEvent->touches.size(); i++) {
+                    cout << "TOUCH ID:" << inputEvent->touches[i].id;
+                    cout << " X:" << inputEvent->touches[i].position.x;
+                    cout << " Y:" << inputEvent->touches[i].position.y << endl;
+                }
+            break;
+        }
+    }
+}</code></pre>
+
+<p>You can simulate touch events on a system that doesn't support touch input by setting the <b>simulateTouchWithMouse</b> boolean in CoreInput to true. You can also enable mouse input on a system that only has touch input by setting the <b>simulateMouseWithTouch</b> boolean in CoreInput to true.</p>

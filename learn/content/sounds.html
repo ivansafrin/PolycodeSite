@@ -1,0 +1,33 @@
+<div class="page-header">
+        <h2>Sounds.</h2>
+</div>
+<p class="lead">Polycode can load and play sound files from WAV and OGG formats via the Sound class.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#loading">Loading sounds.</a></li>
+	<li><a href="#playing">Playing sounds.</a></li>
+	<li><a href="#adjusting">Adjusting sound properties.</a></li>
+</ul>
+<h4 id="loading">Loading sounds.</h4>
+<p>To load a sound file in Polycode, you can create a <b>Sound</b> class initialized with the path to the OGG or WAV format file to load.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Sound *demoSound = new Sound("demo.ogg");</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">demoSound = Sound("demo.ogg")</code></pre>
+<h4 id="playing">Playing sounds.</h4>
+<p>To play a loaded sound, call the <b>Play</b> method of the Sound class. If you want the sound playback to loop, pass <b>true</b> to the play method.</b>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">demoSound->Play();
+loopingSound->Play(true);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">demoSound:Play()
+loopingSound:Play(true)</code></pre>
+<h4 id="adjusting">Adjusting sound properties.</h4>
+<p>You can adjust sound properties, such as volume and pitch via the Sound class. To set volume, use the <b>setVolume</b> method, which takes a parameter from 0.0 to 1.0, with 0.0 being totally silent and 1.0 being at full volume.</p>
+<p>To set the sound's pitch, use the <b>setPitch</b> method and pass it a new pitch value where 0.5 is half of the sound's original pitch and 2.0 is twice the original pitch.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">demoSound->setVolume(0.5);
+demoSound->setPitch(0.8);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">demoSound:setVolume(0.5)
+demoSound:setPitch(0.8)</code></pre>

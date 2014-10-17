@@ -63,7 +63,7 @@ function TimerApp:onTimer(event)
 end
 
 timerApp = TimerApp()</code></pre>
-<p>Dispatching events in Lua works the same way. We subclass an EventDispatcher class and use <b>dispatchEvent</b> to send our events. In the example below, we modify our Timer app to dispatch its own event when it handles the Timer's trigger event.</p>
+<p>Dispatching events in Lua works the same way as it does in C++. We subclass an EventDispatcher class and use <b>dispatchEvent</b> to send our events. In the example below, we modify our Timer app to dispatch its own event when it handles the Timer's trigger event.</p>
 <pre><code class="prettyprint">
 class "TimerApp" (EventDispatcher)
 

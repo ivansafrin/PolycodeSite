@@ -1,0 +1,43 @@
+<div class="page-header">
+        <h2>Positional sound.</h2>
+</div>
+<p class="lead">You can place positional sound sources in Polycode entities that are attenuated based on the listener's position and orientation.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#overview">Positional sound overview.</a></li>
+	<li><a href="#ide">Placing positional sounds in the IDE.</a></li>
+	<li><a href="#code">Placing positional sounds in code.</a></li>
+	<li><a href="#listener">Setting the listener position.</a></li>
+</ul>
+<h4 id="overview">Positional sound overview.</h4>
+<p>To create sounds in 3D (or 2D!) space, you can place positional sounds inside of Polycode's entities using the <b>SceneSound</b> class. The SceneSound class is a wrapper for the regular Sound class, but subclasses the Entity class and can be placed inside of other entities. The sound is attenuated based on the distance to the instance of the SceneSoundListener class, of which there can only be one active at a time. The distance attenuation is based on two parameters set in each SceneSound class, <b>Reference Distance</b>, which defines the distance at which the sound's volume is at 50% and <b>Maximum distance</b>, which defines the distance at which the sound is no longer heard.</p>
+<h4 id="ide">Placing positional sounds in the IDE.</h4>
+<img class="limg_l" width="182" src="/learn/images/create_sound.png">
+<p>To add a positional sound in the IDE entity editor, click on the add entity button in the top left corner of the editor screen and select "Sound". After creating the sound, you can choose the sound file to play from this location as well as edit its settings in the entity properties to the right.</p>
+<p>If the <b>Loop on load</b> checkbox is enabled in the sound properties, this sound will play automatically on a loop when the entity s loaded. This is useful for ambient sound sources that are always playing.</p>
+<p>If you need to manually trigger the sound playback, you will have to give this sound a tag or an id and play it manually from code by calling the Play method of the Sound class, which you can access by calling <b>getSound</b> on the SceneSound instance.<br><br></p>
+<h4 id="code">Placing positional sounds in code.</h4>
+<p>To place a positional sound in code, you need to create an instance of the SceneSound class and add it to your scene, passing it the reference and maximum distance values. You can use the <b>setReferenceDistance</b> and <b>setMaxDistance</b> of the Sound class contained within the SceneSound to adjust its distance attenuation properties after you create it as well.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">SceneSound *testSound = new SceneSound("demo.ogg", 5.0, 10.0);
+testSound->getSound()->Play(true);
+testSound->getSound()->setReferenceDistance(2.0);
+testSound->getSound()->setMaxDistance(4.0);
+scene->addChild(testSound);
+</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">testSound = SceneSound("demo.ogg", 5.0, 10.0)
+testSound:getSound():Play(true)
+testSound:getSound():setReferenceDistance(2.0)
+testSound:getSound():setMaxDistance(4.0)
+scene:addChild(testSound)</code></pre>
+<h4 id="listener">Setting the listener position.</h4>
+<p>To set the position and orientation that all active positional sounds attenuate in relation to, you need to create a <b>SceneSoundListener</b> class and add it to your scene. There can only be one SceneSoundListener active at any time and if you have multiple ones added to active scenes, Polycode will use whatever the last SceneSoundListener is updated in the loop.</p>
+<p>SceneSoundListener is just like any other entity and can be positioned and rotated to set the sound engine's listening position. You may attach the SceneSoundListener to a game's player entity or manually set its transform depending on your needs.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">SceneSoundListener *soundListener = new SceneSoundListener();
+scene->addEntity(soundListener);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">soundListener = SceneSoundListener()
+scene:addEntity(soundListener)</code></pre>
+
