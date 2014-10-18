@@ -1,0 +1,82 @@
+<div class="page-header">
+<h2>Basic app structure and setup.</h2>
+</div>
+<p class="lead">This page describes the basics of setting up a Polycode application using C++ or Lua.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#cpp">Polycode applications in C++.</a></li>
+	<li><a href="#cpp_loop">Application loop in C++.</a></li>
+	<li><a href="#lua_ide">Polycode Lua applications using the IDE.</a></li>
+	<li><a href="#lua_standalone">Polycode Lua applications using commmand line tools.</a></li>
+	<li><a href="#lua_loop">Application loop in Lua.</a></li>
+</ul>
+<h4 id="cpp">Polycode applications in C++.</h4>
+<p>A Polycode application is centered around the <b>Core</b> class, which is initialized with a <b>PolycodeView</b> instance.</p>
+<p>The Core is an abstract class that defines platform-related functionality, such as updates, window management, disk operations, thread managment and input and is implemented as a subclass on each supported platform. To initialize a Polycode application, you must instantiate a Core instance, passing it some intial parameters and a pointer to a PolycodeView instance.</p>
+<p>For more information about miscellanious Core functions, see <a href="/learn/core">Core</a>.</p>
+<p>PolycodeView is a class that contains platform-specific windowing information. It is imlemented completely differently on each platform to fit that platform's programming paradigm. For example, on the Mac, PolycodeView is an Objective-C class that sublcasses the Cocoa NSOpenGLView while on Windows it is a C++ class that contains the window handle. This system allows you to instantiate Polycode into a larger application and provides flexibility around the main loop and windowing of the application, with the tradeoff that the setup and basic loop differ a bit on each platform.</p>
+<p>See the template project in each platform's distribution for details on platform-specific setup and loop implementations. You can also copy the Template project to use as a base for your C++ project.</p> 
+<p>The platform-specific Core subclass is defined on each platform as <b>POLYCODE_CORE</b>. In this example, we initialize the Core as a 1280x720 window with vSync, running at 90 frames per second. See the <a href="/docs/class_polycode_1_1_core.html">Core documentation</a> for the complete list of the Core constructor arguments.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Core *core = new POLYCODE_CORE(view, 1280,720,false,true,0,0,90, 0, true);</code></pre>
+<h4 id="cpp_loop">Application loop in C++.</h4>
+<p>After the Core is instantiated, it must be updated in a loop. On most platforms, a simple <i>while</i> loop will suffice, though on some platforms, like Mac, the loop is done via a Cocoa timer. See the template project for each platform for loop impementation details.</p>
+<p>The easiest way to update the Core is to call <b>updateAndRender</b> on it. This will update all of Polycode's internal systems and then render active scenes to the screen. This method will return Polycode's internal running state and you can use it as a base for your main loop.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">bool done = false;
+while(!done) {
+	Number elapsed = core->getElapsed();
+	done = core->updateAndRender();
+}</code></pre>
+<p>updateAndRender is basically a convenience wrapper that calls <b>Update()</b> and <b>Render()</b> in one method, but in some cases, you would want to separate your Update and Render calls and run some code after the update has happened, but before things are rendered.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">bool done = false;
+while(!done) {
+	done = core->Update();
+	Number elapsed = core->getElapsed();
+	core->Render();
+}</code></pre>
+<p>Update is in turn a convenience wrapper for Polycode's internal fixed update system. If your application uses a physics module or does any kind of granular collision detection, it is advised that you use a fixed update loop in your application alongside Polycode's fixed update. To do that, you need to first call <b>systemUpdate()</b> on the core, and then keep calling <b>fixedUpdate</b> until it returns false, executing your code in between. Polycode ensures that this will only happen at a fixed interval defined by the framerate the Core was set to. This loop also allows you to respond to physics events that happen internally in Polycode during the fixed updates.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">bool done = false;
+while(!done) {
+	done = core->systemUpdate();
+	while(core->fixedUpdate()) {
+		// this code will be called at a fixed interval 
+	}
+	core->Render();
+}</code></pre>
+<h4 id="lua_ide">Polycode Lua applications using the IDE.</h4>
+<p>To create new Lua application in the IDE, select File->New Project from the application menu and choose a template to start with.</p>
+<img class="limg_c" width="100%" src="/learn/images/new_project.png"/>
+<p>You don't have to write any code to initialize a Lua application, it will run even with a blank source file and updated and rendered automatically. To run the application, click on the big play button or choose Project->Run Project from the application menu.</p>
+<p>You can change the application's default settings by clicking on the polyproject file in the project tree. This will allow you to change the resolution, texture filtering options, link dynamic modules, add fonts to your application and set the main lua source file for your app. By default, the main source file of a new application is <b>Main.lua</b></p>
+<img class="limg_c" width="100%" src="/learn/images/project_options.png"/>
+<h4 id="lua_standalone">Polycode Lua applications using commmand line tools.</h4>
+<p>If you prefer not to use the Polycode IDE, you can manually call the standalone command line tools that the IDE uses under the hood and have your own toolchain.</p>
+<p>To do this, you will need to manually create the polyproject file that the IDE generates. A polyproject is an XML file that defines the basic application settings and the files that are bundled into the polyapp.</p>
+<div class="codeh">XML</div>
+<pre><code class="prettyprint">&lt;?xml version=&quot;1.0&quot; ?&gt;
+&lt;PolycodeProject defaultWidth=&quot;640&quot; defaultHeight=&quot;480&quot; antiAliasingLevel=&quot;0&quot; entryPoint=&quot;Scripts/Main.lua&quot; textureFiltering=&quot;linear&quot; vSync=&quot;false&quot; anisotropyLevel=&quot;0&quot; frameRate=&quot;60&quot;&gt;
+    &lt;backgroundColor red=&quot;0.25&quot; green=&quot;0.25&quot; blue=&quot;0.25&quot; /&gt;
+    &lt;packedItems&gt;
+        &lt;item type=&quot;folder&quot; path=&quot;Scripts&quot; /&gt;
+    &lt;/packedItems&gt;
+&lt;/PolycodeProject&gt;</code></pre>
+<p>To build a Polycode Lua project using the command line tools, you need to add the standalone tool directory (Standalone/Bin in the Polycode IDE folder, or in Contents/Resources of Polycode.app on Mac) to your path and call the <b>polybuild</b> tool.</p>
+<pre>
+polybuild --config=DemoProject.polyproject --out=DemoApp.polyapp
+</pre>
+<p>This will build the polyapp file that you can then run with the PolycodePlayer. To create a standalone application for a supported platform, simply replace main.polyapp in any of the standalone player builds under Standalone/Publish with your application's polyapp file.</p>
+<h4 id="lua_loop">Application loop in Lua.</h4>
+<p>The update and rendering loop in Lua is managed internally by the Polycode Player, so you do not need to call Update or Render yourself. The player will call a global Lua function called <b>Update</b> on every update frame and pass it the time elapsed since last frame. You can implement this function yourself and do all of your application's updates in that function.</p>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">function Update(elapsed)
+	-- update code here
+end</code></pre>
+<p>If you wish to use a fixed update loop in Lua, you can implement a global <b>fixedUpdate</b> function, which will be called on every fixed update.</p>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">function fixedUpdate()
+	-- fixed update code here
+end</code></pre>
+

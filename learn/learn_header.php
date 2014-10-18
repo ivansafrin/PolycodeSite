@@ -7,7 +7,7 @@
 	<div class="list-group">
             <a href="/learn" class="list-group-item">Introduction</a>
             <a href="/learn/scripting" class="list-group-item">Lua scripting</a>
-            <a href="/learn/structure" class="list-group-item">Basic app structure</a>
+            <a href="/learn/setup" class="list-group-item">Basic app setup</a>
          </div>
 
 	<h4>Graphics</h4>
