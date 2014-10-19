@@ -1,0 +1,60 @@
+<div class="page-header">
+<h2>Entity instances.</h2>
+</div>
+<p class="lead">Polycode lets you visually create 2D and 3D entities using the entity editor in the IDE and load them into your scenes. You can use this system to create anything from complex mesh structures to UI layouts or even entire game levels.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#overview">Entity instances overview.</a></li>
+	<li><a href="#editing">Editing entities in the IDE.</a></li>
+	<li><a href="#loading">Loading entities into scenes.</a></li>
+	<li><a href="#accessing">Accessing entities from code.</a></li>
+</ul>
+<h4 id="overview">Entity instances overview.</h4>
+<p>The Polycode IDE supports visual editing of entites via its entity editor. The entities are saved to a custom <b>.entity</b> file format, which can then be loaded in code as a <b>SceneEntityInstance</b> class. Entities can also be added to other entities to create complex entity hierarchies, and thus, Polycode does not make a distinction between entire scenes and the smaller entities that make up their parts (a scene is then just a large entity that gets added to the root entity of a Scene.</p>
+<p>Entity instances are designed to interact with code by using <b>tags</b> and <b>ids</b>. Kind of like how html markup interacts with javascript. To apply code to a certain entity within an instance, we give it a unique id or a number of tags, which we can use in our code to get a pointer to that entity or a group of entities that share a certain tag.</p>
+<p>Entities use linked resource pools (see <a href="/learn/resources">Resource management</a>) to load and keep track of certain assets.</p>
+<h4 id="editing">Editing entities in the IDE.</h4>
+<p>To create a new entity in the IDE, select <b>File&rarr;New File</b> from the application menu and select <b>Entity</b>. This will create a new .entity file and open it for editing.</p>
+<img class="limg_c" width="611" src="/learn/images/new_entity.png"/>
+<img class="limg_l" width="24" src="/learn/images/add_entity.png"/>
+<p>To add new items to the entity, click on the "Add Entity" button in the top left corner of the editor. This will allow you place meshes, labels and other basic Polycode types within the entity. See the pages on specific types to get more information about using them.</p>
+<h4 id="loading">Loading entities from scenes.</h4>
+<p>The <b>SceneEntityInstance</b> class allows us to load entities from a file into an existing scene. Because a SceneEntityInstance is an entity like any other, it can be added to the scene's root entity or attached to any other entity we wish. We need to pass the scene that this entity is going into as the first parameter, so that it can create lights and other entities that require full scene access.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">SceneEntityInstance *instance = new SceneEntityInstance(scene, "demo.entity");
+scene->addChild(instance);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">instance = SceneEntityInstance(scene, "demo.entity")
+scene:addChild(instance)</code></pre>
+<h4 id="accessing">Accessing entities from code.</h4>
+<p>After we load an entity and add it to the scene or another entity, we might want to access certain entities within it and apply some code to them. To do that, we use the entities' <b>id</b> to find a specific entity or use <b>tags</b> to get lists of entities that are tagged with a certain tag.</p>
+<p>To get a specific entity by id, we use the <b>getEntityById</b> method of our entity instance. In fact, it's a method that is part of any Entity, and searches its children for the first occurence of an entity that has this id. The second argument to getEntityById determines if this search is recursive or not. We must also cast the returned Entity to the correct subclass in order to access its functionality.</p>
+<p>In the example below, we change the text of a SceneLabel that is a part of our loaded entity instance and that has an id of "demo_label".</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">SceneLabel *label = (SceneLabel*) instance->getEntityById("demo_label", true);
+if(label) {
+    label->setText("CHANGED!");
+}</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">label = safe_cast(instance:getEntityById("demo_label", true), SceneLabel)
+if label ~= nil then
+	label:setText("CHANGED!")
+end</code></pre>
+<p>To access entites that are have a certain tag, we can use the <b>getEntitiesByTag</b> method, which works similarly to getEntityById, except it returns an array (an std::vector in C++) of all entities tagged with the requested tag. Just like getEntityById, its second parameter determines whether the method recursively searches recrursively through all children.</p>
+<p>For example, let's say we want to have a "rotating" tag that makes an entity slowly rotate. We'll add this tag to some entities in our entity instance and now in the code, we want to rotate them a little bit on every frame. We get all the entities tagged with "rotating" into an array and then iterate through it, rotating each one.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">std::vector&lt;Entity*&gt; rotating = instance->getEntitiesByTag("rotating", true);
+
+// then in our update loop
+for(int i=0; i < rotating.size(); i++) {
+    rotating[i]->Roll(core->getElapsed() * 30);
+}
+</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">rotating = instance:getEntitiesByTag("rotating", true)
+
+function Update(elapsed)
+	for i=1,count(rotating) do
+		rotating[i]:Roll(elapsed * 30.0)
+	end
+end</code></pre>
