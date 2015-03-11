@@ -1,0 +1,43 @@
+<div class="page-header">
+<h2>Sprites and sprite sheets.</h2>
+</div>
+<p class="lead">Polycode contains a 2D sprite system that you can use to create 2D animations from sprite sheets and use complex texture atlases for static and animated graphics.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#overview">Sprites overview.</a></li>
+	<li><a href="#creating">Creating sprite sets in the IDE.</a></li>
+	<li><a href="#placing">Placing sprites in the IDE entity editor.</a></li>
+	<li><a href="#code">Using sprites in your code.</a></li>
+	<li><a href="#creating_code">Creating sprite sets in code.</a></li>
+</ul>
+<h4 id="overview">Sprites overview.</h4>
+<p>The sprite system is based around the <b>SpriteSet</b> and <b>SceneSprite</b> classes.</p>
+<p>A <b>SpriteSet</b> contains information about the sprite sheet image, the individual sprites within it and the different states defined for each sprite (which can be animations or single frame static states). <b>SpriteSets</b> can be created programmatically or visually inside the IDE's sprite editor.</p>
+<p>A <b>SceneSprite</b> is a sprite instance of a sprite defined inside of a <b>SpriteSet</b>. It can be set to any of the states defined for that sprite and is an <b>Entity</b> subclass, so it can be added to a <b>Scene</b> or another entity. <b>SceneSprites</b> can also be placed visually in the IDE entity editor.</p>
+<h4 id="creating">Creating sprite sets in the IDE.</h4>
+<p>The Polycode IDE allows you to edit a <b>SpriteSet</b> visually and save it as a <b>.sprites</b> file, which you can then load in your code or link to an entity in the entity editor so that you can place the sprites from the sprite set inside the entity.</p>
+<p>To create a new sprite set, add a new file to your project and choose "Sprite Set" as the file template.</p>
+<img class="limg_c" width="90%" src="/learn/images/create_sprite_set.png"/>
+<p>This will create an empty sprite set using the Polycode default texture and no defined sprites.</p>
+<h5>Working with sprite sheets.</h5>
+<p>To set the sprite sheet image that will be used by the sprite set, click on the "Change Image" button on the bottom of the sprite sheet pane. This will open the Asset Browser, which will allow you to choose an image inside of your project.</p>
+<img class="limg_c" width="90%" src="/learn/images/change_sprite_sheet.png"/>
+<p>After choosing your sprite sheet image, you will see it displayed in the sprite sheet pane.</p>
+<p>The next step is to define the sprite frames within the sprite sheet. You can either generate these automatically or manually define the frames. Usually you want to use the automatic generation and then correct it with manual frames if it gives you unwanted results.</p>
+<p>To generate the frames automatically, you have to set the type of frame generation that you want from the drop down next to the "Generate" button below the sprite sheet. If you have a uniform sprite sheet that is a grid of equally sized rectangles, use the "Uniform Grid" option. If you have a sprite sheet where all of the images are packed together in different sizes, use the "Detect frames" option. To generate the frames, hit the "Generate" button.</p>
+<p>The "Detect Frames" frame generation will attempt to detect each individual sprite in the sprite sheet. You can control the threshold of the minimum distance that individual sprites are away from each other from the "Options" toolbox, so if you have sprites that have disconnected parts, you can force the frame detection to treat them as a single sprite.</p>
+<img class="limg_c" width="90%" src="/learn/images/detect_frames.png"/>
+<p>The "Uniform Grid" frame detection simply divides the sprite sheet into a grid of sprites. You can set the width and height of the sprites in the "Options" toolbox.</p>
+<img class="limg_c" width="90%" src="/learn/images/uniform_grid.png"/>
+<p>For both generation options, you can set the default frame anchor that will be set for each generated sprite frame. The frame anchor defines the origin point of the sprite frame that will be at 0,0 position of the sprite entity.</p>
+<p>To create a sprite frame manually, simply click and drag anywhere in the sprite sheet outside of an existing sprite frame</p>
+<p>To edit existing sprite frames, click on a sprite frame to select it, then use the handles on the edges of the frame to resize the frame rectangle or move its anchor point using the pink anchor dot. Use the delete key to remove the frame.</p>
+<p>You can use the mousewheel to zoom in and out of the sprite sheet for more precise editing. Use alt-click and drag to pan around the sprite sheet.</p>
+<h5>Adding sprites to the sprite set.</h5>
+<p>After you define the frames of the sprite sheet, you can create the individual sprites and edit their states.</p>
+<p>To add a new sprite to the sprite set, git the "+" button on the top of the sprite browser at the bottom of the sprite editor and name the new sprite. This will add a new sprite with a blank default state. Each sprite needs at least one state, so a default state is added automatically, which you can use for sprites that don't have any changing states.</p>
+<h5>Working with sprite states.</h5>
+<p>To add or remove sprite states within a sprite, select the sprite in the sprite browser and then use the "+" and "-" buttons on the top of the state browser to the side of the sprite browser to manage sprite states. To edit a sprite state, select it from the sprite state list.</p>
+<h4 id="placing">Placing sprites in the IDE entity editor.</h4>
+<p>You can place sprites from a sprite set created in the IDE into entities in the entity editor by linking the sprite set file as an entity resource pool.</p>
+<p></p>

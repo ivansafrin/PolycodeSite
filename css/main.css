@@ -260,6 +260,13 @@ background-image: linear-gradient(to bottom, #355FB5 0%, #37A2BF 36%, #FFFFFF 10
 	margin-top: 30px;
 }
 
+.whitepage h5 {
+	margin-top: 20px;
+	font-size: 16px;
+	color: gray;
+}
+
+
 .gal_feat_detail {
 	text-align: left;
 	padding: 30px;

@@ -1,0 +1,24 @@
+<div class="page-header">
+<h2>Particle systems.</h2>
+</div>
+<p class="lead">Polycode provides a particle system that can be added to any Scene or other Entity.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#overview">Particle system overview.</a></li>
+	<li><a href="#placing">Placing particle systems in the IDE.</a></li>
+	<li><a href="#code">Creating particle systems in code.</a></li>
+	<li><a href="#properties">Properties of particle systems.</a></li>
+</ul>
+<h4 id="overview">Particle system overview.</h4>
+<p>The Polycode particle system is based around the<b>SceneParticleEmitter</b> class, which subclasses the <b>SceneMesh</b> class and can be textured and have materials applied to it like any other SceneMesh (see <a href="/learn/materials">Materials and shaders</a>). Particle emitters can either continuosly emit particles or act as triggered emitters which emit all particles at once.</p>
+<h4 id="placing">Placing particle systems in the IDE.</h4>
+<img class="limg_l" width="169px" src="/learn/images/add_particles.png"/>
+<p>You can place particle emitters in the IDE entity editor. To place a new particle system, click on the "Add Entity" button on the top left of the entity editor and choose "Add Particle System".</p>
+<p>After adding the particle system, you can move it like any other entity in the entity editor and edit its properties in the property editor as well as set its material.</p>
+<p>Polycode comes with two default particle materials in the Global pool. "Particles" and "ParticlesAdditive", but of course, you can assign whatever material you want as well.</p>
+<p>See <a href="#properties">Properties of particle systems</a> for a list of all parameters that you can edit in the propery sheet.</p>
+<h4 id="code">Creating particle systems in code.</h4>
+<p>You can create particle systems in code as well by instantiating the <b>SceneParticleEmitter</b> class.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">
+</code></pre>

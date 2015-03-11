@@ -16,6 +16,7 @@
             <a href="/learn/cameras" class="list-group-item">Cameras and resolutions</a>
             <a href="/learn/entities" class="list-group-item">Entity instances</a>
             <a href="/learn/primitives" class="list-group-item">Images and primitives</a>
+            <a href="/learn/sprites" class="list-group-item">Sprites and sprite sheets</a>
             <a href="/learn/text" class="list-group-item">Rendering text</a>
             <a href="/learn/meshes" class="list-group-item">Rendering meshes</a>
             <a href="/learn/skeletons" class="list-group-item">Skeletal animation</a>
