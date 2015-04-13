@@ -1,0 +1,35 @@
+<div class="page-header">
+<h2>Saving and loading data.</h2>
+</div>
+<p class="lead">Polycode provides a data object system that can be saved and loaded to/from XML and binary files. You can use this system to easily save and load complex data.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#overview">Data objects overview.</a></li>
+	<li><a href="#creating">Creating data objects.</a></li>
+	<li><a href="#saving">Saving data objects.</a></li>
+	<li><a href="#loading">Loading data objects.</a></li>
+</ul>
+<h4 id="overview">Data objects overview.</h4>
+<p>The Polycode data system is based around the <b>Object</b> class, which contains a hierarchy of <b>ObjectEntry</b> classes. You can think of an ObjectEntry as a dictionary entry, having a name (key) and some sort of data (value). The data can be a String, a Number or an integer. An ObjectEntry can contain other ObjectEntries as children, which can be accessed either by their name or by index as an array.</p>
+<h4 id="creating">Creating data objects.</h4>
+<p>To create a data object and populate it with data, create an Object class and use its root ObjectEntry as a base for creating your data structure by adding new ObjectEntry children to it. Let's use this example to save a fictional game player character.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Object saveObject;
+saveObject.root.name = "player";
+
+saveObject.root.addChild("name", player.name);
+saveObject.root.addChild("hp", player.hp);
+saveObject.root.addChild("gold", player.gold);
+
+ObjectEntry *inventoryEntry = saveObject.root.addChild("inventory");
+
+for(int i=0; i < player.inventory.size(); i++) {
+	ObjectEntry *itemEntry = inventoryEntry->addChild("item");
+	itemEntry->addChild("type", player.inventory[i].type);
+	itemEntry->addChild("count", player.inventory[i].count);
+}
+
+</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">
+</code></pre>

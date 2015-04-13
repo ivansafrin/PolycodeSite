@@ -8,7 +8,6 @@
 	<li><a href="#creating">Creating sprite sets in the IDE.</a></li>
 	<li><a href="#placing">Placing sprites in the IDE entity editor.</a></li>
 	<li><a href="#code">Using sprites in your code.</a></li>
-	<li><a href="#creating_code">Creating sprite sets in code.</a></li>
 </ul>
 <h4 id="overview">Sprites overview.</h4>
 <p>The sprite system is based around the <b>SpriteSet</b> and <b>SceneSprite</b> classes.</p>
@@ -41,3 +40,26 @@
 <h4 id="placing">Placing sprites in the IDE entity editor.</h4>
 <p>You can place sprites from a sprite set created in the IDE into entities in the entity editor by linking the sprite set file as an entity resource pool.</p>
 <p></p>
+<h4 id="code">Using sprites in your code.</h4>
+<p>To use a sprite set created in the IDE in your code, you need to create a new <b>SpriteSet</b> instance and pass it the filename of the sprite set you created in the IDE. You can then create <b>SceneSprite</b> instances referencing this sprite set and place them in your scene.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">SpriteSet *spriteSet = new SpriteSet("my_sprite_set.sprites");
+SceneSprite *sceneSprite = new SceneSprite(spriteSet);
+scene->addEntity(sceneSprite);
+</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">spriteSet = SpriteSet("Resources/sprite_set.sprites", Services.ResourceManager:getGlobalPool())
+sceneSprite = SceneSprite(spriteSet)
+scene:addEntity(sceneSprite)
+</code></pre>
+
+<p>To set the specific sprite and sprite state from the set, use the <b>setSpriteByName</b> and <b>setSpriteStateByName</b> methods.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">
+sceneSprite->setSpriteByName("Explosion");
+sceneSprite->setSpriteStateByName("default", 0, false);
+</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">sceneSprite:setSpriteByName("Explosion")
+sceneSprite:setSpriteStateByName("default", 0, false)
+</code></pre>
