@@ -3,3 +3,6 @@
 *.swn
 .DS_Store
 community/config/config.php
+community/uploads
+community/cache
+download/content
