@@ -17,10 +17,10 @@
 		</div>
 		<div class="col-md-6">
 			<div class="list-group" style="padding-top: 10px">
-				<a href="#" class="list-group-item download-item"><span class="glyphicon glyphicon-download"></span> Polycode 0.8.4 for Windows (32-bit)</a>
-				<a href="#" class="list-group-item download-item"><span class="glyphicon glyphicon-download"></span> Polycode 0.8.4 for MacOS X 10.7+ (64-bit)</a>
-				<a href="#" class="list-group-item download-item"><span class="glyphicon glyphicon-download"></span> Polycode 0.8.4 for Linux (64-bit)</a>
-				<a href="#" class="list-group-item download-item"><span class="glyphicon glyphicon-download"></span> Polycode 0.8.4 source code</a>
+				<a href="/download/content/PolycodeWin64_0.8.4.zip" class="list-group-item download-item"><span class="glyphicon glyphicon-download"></span> Polycode 0.8.4 for Windows (64-bit)</a>
+				<a href="/download/content/PolycodeDarwin_0.8.4.zip" class="list-group-item download-item"><span class="glyphicon glyphicon-download"></span> Polycode 0.8.4 for MacOS X 10.7+ (64-bit)</a>
+				<a href="/download/content/PolycodeLinux_0.8.4.tar.gz" class="list-group-item download-item"><span class="glyphicon glyphicon-download"></span> Polycode 0.8.4 for Linux (32-bit)</a>
+				<a href="/download/content/Polycode-0.8.4.zip" class="list-group-item download-item"><span class="glyphicon glyphicon-download"></span> Polycode 0.8.4 source code</a>
 			</div>
 		</div>
 	  </div>

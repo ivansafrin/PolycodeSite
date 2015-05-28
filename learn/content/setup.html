@@ -13,10 +13,9 @@
 <h4 id="cpp">Polycode applications in C++.</h4>
 <p>A Polycode application is centered around the <b>Core</b> class, which is initialized with a <b>PolycodeView</b> instance.</p>
 <p>The Core is an abstract class that defines platform-related functionality, such as updates, window management, disk operations, thread managment and input and is implemented as a subclass on each supported platform. To initialize a Polycode application, you must instantiate a Core instance, passing it some intial parameters and a pointer to a PolycodeView instance.</p>
-<p>For more information about miscellanious Core functions, see <a href="/learn/core">Core</a>.</p>
 <p>PolycodeView is a class that contains platform-specific windowing information. It is imlemented completely differently on each platform to fit that platform's programming paradigm. For example, on the Mac, PolycodeView is an Objective-C class that sublcasses the Cocoa NSOpenGLView while on Windows it is a C++ class that contains the window handle. This system allows you to instantiate Polycode into a larger application and provides flexibility around the main loop and windowing of the application, with the tradeoff that the setup and basic loop differ a bit on each platform.</p>
 <p>See the template project in each platform's distribution for details on platform-specific setup and loop implementations. You can also copy the Template project to use as a base for your C++ project.</p> 
-<p>The platform-specific Core subclass is defined on each platform as <b>POLYCODE_CORE</b>. In this example, we initialize the Core as a 1280x720 window with vSync, running at 90 frames per second. See the <a href="/docs/class_polycode_1_1_core.html">Core documentation</a> for the complete list of the Core constructor arguments.</p>
+<p>The platform-specific Core subclass is defined on each platform as <b>POLYCODE_CORE</b>. In this example, we initialize the Core as a 1280x720 window with vSync, running at 90 frames per second. </p>
 <div class="codeh">C++</div>
 <pre><code class="prettyprint">Core *core = new POLYCODE_CORE(view, 1280,720,false,true,0,0,90, 0, true);</code></pre>
 <h4 id="cpp_loop">Application loop in C++.</h4>
