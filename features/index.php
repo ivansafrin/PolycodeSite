@@ -132,7 +132,7 @@
 	  <div class="row">
 		<div class="hidden-sm hidden-xs" style="margin: 10px auto 30px auto; width: 600px; display: block"><img src="/images/feature_ui.svg" /></div>
 		<div>
-			<p>Polycode comes with a UI module that includes buttons, checkboxes, slides, color pickers, file dialogs, scroll bars, text input, menus and windows. It's fully skinnable and comes with light and dark default themes which include a high-reslution retina-ready version.</p>
+			<p>Polycode comes with a UI module that includes buttons, checkboxes, slides, color pickers, file dialogs, scroll bars, text input, menus and windows. It's fully skinnable and comes with light and dark default themes which include a high-resolution retina-ready version.</p>
 		</div>
 	  </div>
 
