@@ -16,12 +16,12 @@ if (!defined("IN_ESOTALK")) exit;
 <meta charset='<?php echo T("charset", "utf-8"); ?>'>
 <title><?php echo sanitizeHTML($data["pageTitle"]); ?></title>
 <?php echo $data["head"]; ?>
-<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="/css/main.css">
 <link rel="stylesheet" href="/css/main_forum.css">
 </head>
 
-<body class='<?php echo $data["bodyClass"]; ?>'>
+<body class='<?php echo $data["bodyClass"]; ?> gray_container'>
 <?php $this->trigger("pageStart"); ?>
 
 <div class="navbar navbar-inverse navbar-static-top" role="navigation">
@@ -35,13 +35,14 @@ if (!defined("IN_ESOTALK")) exit;
 			<li><a href="/gallery">Gallery</a></li>
 			<li><a href="/download">Download</a></li>
 			<li><a href="/learn">Learn</a></li>
-			<li><a href="/docs">Docs</a></li>
 			<li><a href="/community">Community</a></li>
 		  </ul>
 		</div><!--/.nav-collapse -->
 	  </div>
 	</div>
-	<div class="whitepage">
+	<div class="container">
+
+	<div style="margin-top: 20px" class="whitepage">
 <div id='messages'>
 <?php foreach ($data["messages"] as $message): ?>
 <div class='messageWrapper'>
@@ -62,7 +63,7 @@ if (!defined("IN_ESOTALK")) exit;
 <a href='<?php echo $data["backButton"]["url"]; ?>' id='backButton' title='<?php echo T("Back to {$data["backButton"]["type"]}"); ?>'><i class="icon-circle-arrow-left"></i></a>
 <?php endif; ?>
 
-<h1 id='forumTitle'><a href='<?php echo URL(""); ?>'><?php echo $data["forumTitle"]; ?></a></h1>
+<h1 style="font-family: 'Open Sans'" id='forumTitle'><a href='<?php echo URL(""); ?>'><?php echo $data["forumTitle"]; ?></a></h1>
 
 <ul id='mainMenu' class='menu'>
 <?php if (!empty($data["mainMenuItems"])) echo $data["mainMenuItems"]; ?>
@@ -71,8 +72,8 @@ if (!defined("IN_ESOTALK")) exit;
 <ul id='userMenu' class='menu'>
 <?php echo $data["userMenuItems"]; ?>
 <li><a href='<?php echo URL("conversation/start"); ?>' class='link-newConversation button'><?php echo T("New Conversation"); ?></a></li>
+<li> &nbsp;</li>
 </ul>
-
 </div>
 </div>
 </div>
@@ -99,8 +100,9 @@ if (!defined("IN_ESOTALK")) exit;
 </div>
 </div>
 	<div class="footer">
-        	<p>&copy; Ivan Safrin, Polycode team 2014</p>
+        	<p>&copy; <a target="_blank" href="https://twitter.com/ivansafrin">Ivan Safrin</a>, <a target="_blank" href="https://github.com/ivansafrin/Polycode/graphs/contributors">Polycode team</a> 2015</p>
 	</div>
+</div>
 
 </body>
 </html>

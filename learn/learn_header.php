@@ -39,7 +39,7 @@
             <a href="/learn/sounds" class="list-group-item">Loading and playing sounds</a>
             <a href="/learn/positional_sound" class="list-group-item">Positional sound</a>
           </div>
-
+<!--
 	<h4>Utilities</h4>
 	<div class="list-group">
             <a href="/learn/timers" class="list-group-item">Timers</a>
@@ -63,6 +63,6 @@
             <a href="/learn/2d_physics" class="list-group-item">2D Physics</a>
             <a href="/learn/3d_physics" class="list-group-item">3D Physics</a>
           </div>
-
+--!>
 	</div>
 	<div class="col-md-9">

@@ -254,9 +254,9 @@ span.highlight {background:#fdef34; border:1px solid #fcef98; padding:1px 3px; b
 a.channel:hover {text-decoration:none; border-color:#aaa}
 
 
-/* Search boxes */
+/* Search boxes20/
 .search {float:right}
-.search input.text {width:250px; padding-right:30px; padding-left:25px; background:#fff url(icons.png) no-repeat -13px -292px; float:left}
+.search input.text {width:200px; padding-right:30px; padding-left:25px; background:#fff url(icons.png) no-repeat -13px -292px; float:left}
 .search.big input.text {height:18px; font-size:100%; background-position:-13px -290px}
 .search .control-reset {margin-top:1px; margin-left:-25px; margin-right:0}
 .search .popupButton {margin-left:10px; vertical-align:2px}

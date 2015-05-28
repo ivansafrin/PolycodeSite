@@ -1,6 +1,6 @@
 	
 	<div class="footer">
-        	<p>&copy; Ivan Safrin, Polycode team 2014</p>
+        	<p>&copy; <a target="_blank" href="https://twitter.com/ivansafrin">Ivan Safrin</a>, <a target="_blank" href="https://github.com/ivansafrin/Polycode/graphs/contributors">Polycode team</a> 2015</p>
 	</div>
 
 	</div><!-- /.container -->

@@ -1,5 +1,5 @@
 <?
-	$body_type = "green";
+	$body_type = "blue";
 	require_once("../site/header.php");
 ?>
 

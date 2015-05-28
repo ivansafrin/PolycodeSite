@@ -3,7 +3,7 @@
 }
 
 .container {
-	width: 930px;
+	width: 980px;
 	margin: 0px auto 0px auto;
 	height: 50px;
 }
@@ -52,8 +52,14 @@
 	width: 930px;
 }
 
+
 #hdr {
-	background-color: #9b9b9b;
+	color: black;
+	background-color: white;
+}
+
+#hdr a {
+	color: black;
 }
 
 #body {
