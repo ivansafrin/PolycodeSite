@@ -162,25 +162,24 @@ function name($username, $sanitize = true)
 if (!function_exists("avatar")) {
 
 /**
- * Return an image tag containing a member's avatar.
+ * Return a HTML element to display a member's avatar.
  *
- * @param array $member An array of the member's details. (memberId is required in this implementation.)
- * @param string $avatarFormat The format of the member's avatar (as stored in the database - jpg|gif|png.)
+ * @param array $member An array of the member's details. (memberId and avatarFormat are required in this implementation.)
  * @param string $className CSS class names to apply to the avatar.
  *
  * @package esoTalk
  */
 function avatar($member = array(), $className = "")
 {
-	$url = getResource("core/skin/avatar.png");
-
 	// Construct the avatar path from the provided information.
 	if (!empty($member["memberId"]) and !empty($member["avatarFormat"])) {
 		$file = "uploads/avatars/{$member["memberId"]}.{$member["avatarFormat"]}";
 		$url = getWebPath($file);
+		return "<img src='$url' alt='' class='avatar $className'/>";
 	}
 
-	return "<img src='$url' alt='' class='avatar $className'/>";
+	// Default to an avatar with the first letter of the member's name.
+	return "<span class='avatar $className'>".(!empty($member["username"]) ? strtoupper($member["username"][0]) : "&nbsp;")."</span>";
 }
 
 }
@@ -254,7 +253,7 @@ if (!function_exists("groupLink")) {
  */
 function groupLink($group)
 {
-	return "<a href='".URL("members/?search=".urlencode($group))."'>".groupName($group, true)."</a>";
+	return "<a href='".URL("members/?search=".urlencode(groupName($group)))."'>".groupName($group, true)."</a>";
 }
 
 }
@@ -267,7 +266,7 @@ if (!function_exists("star")) {
  *
  * @param int $conversationId The ID of the conversation that this star is for.
  * @param bool $starred Whether or not the conversation is currently starred.
- * @return stiring
+ * @return string
  *
  * @package esoTalk
  */
@@ -280,7 +279,7 @@ function star($conversationId, $starred)
 	else {
 		$conversationId = (int)$conversationId;
 		$url = URL("conversation/star/".$conversationId."?token=".ET::$session->token."&return=".urlencode(ET::$controller->selfURL));
-		return "<a href='$url' class='starButton' title='".T("Follow to receive notifications")."' data-id='$conversationId'><i class='star icon-star".($starred ? "" : "-empty")."'></i></a>";
+		return "<a href='$url' class='starButton' title='".($starred ? T("Following") : T("Follow"))."' data-id='$conversationId'><i class='star icon-star".($starred ? "" : "-empty")."'></i></a>";
 	}
 }
 
@@ -294,7 +293,7 @@ if (!function_exists("starButton")) {
  *
  * @param int $conversationId The ID of the conversation that this star is for.
  * @param bool $starred Whether or not the conversation is currently starred.
- * @return stiring
+ * @return string
  *
  * @package esoTalk
  */
@@ -309,6 +308,28 @@ function starButton($conversationId, $starred)
 		$url = URL("conversation/star/".$conversationId."?token=".ET::$session->token."&return=".urlencode(ET::$controller->selfURL));
 		return "<a href='$url' class='button big starButton' title='".T("Follow to receive notifications")."' data-id='$conversationId'><i class='star icon-star".($starred ? "" : "-empty")."'></i> <span>".($starred ? T("Following") : T("Follow"))."</span></a>";
 	}
+}
+
+}
+
+
+if (!function_exists("label")) {
+
+/**
+ * 
+ *
+ * 
+ *
+ * @package esoTalk
+ */
+function label($label, $url = "", $className = "")
+{
+	// Make sure the ETConversationModel class has been loaded so we can access its static properties.
+	ET::conversationModel();
+
+	return ($url ? "<a href='$url'" : "<span")." class='label label-$label $className' title='".T("label.$label")."'>
+		<i class='".ETConversationModel::$labels[$label][1]."'></i>
+	</".($url ? "a" : "span").">";
 }
 
 }

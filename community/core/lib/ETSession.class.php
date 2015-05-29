@@ -156,9 +156,10 @@ public function setPreferences($values)
  */
 protected function processLogin($member)
 {
-	// If the member hasn't confirmed their email but we require email confirmation, return a message.
-	if (!$member["confirmedEmail"] and C("esoTalk.registration.requireEmailConfirmation")) {
-		$this->error("emailNotYetConfirmed");
+	// If registrations require confirmation but the user's account hasn't been confirmed, return a message.
+	if (!$member["confirmed"] and ($type = C("esoTalk.registration.requireConfirmation"))) {
+		if ($type == "email") $this->error("emailNotYetConfirmed");
+		elseif ($type == "approval") $this->error("accountNotYetApproved");
 		return false;
 	}
 
@@ -378,7 +379,7 @@ public function pushNavigation($id, $type, $url)
 
 /**
  * Get the item that is on top of the navigation stack. The navigation ID of the current page will be used to
- * make the the item returned isn't the item for the current page.
+ * make sure the item returned isn't the item for the current page.
  *
  * @param string $currentId The unqiue navigation ID of the current page.
  * @return bool|array The navigation item, or false if there is none (if the current page is the top.)

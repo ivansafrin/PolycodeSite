@@ -14,7 +14,7 @@ I've put many hundreds of hours and a lot of love into developing and maintainin
 
 ### System Requirements
 
-esoTalk requires **PHP 5** and a modern version of **MySQL**.
+esoTalk requires **PHP 5.3+** and a modern version of **MySQL**.
 
 The PHP **gd extension** is required to support avatar uploading.
 
@@ -38,4 +38,4 @@ To upgrade esoTalk from an older version, simply:
 
 ### Troubleshooting
 
-If you are having problems installing esoTalk, search for help on the [support forum](http://esotalk.org/forum).
+If you are having problems installing esoTalk, view the [Troubleshooting](http://esotalk.org/docs/debug) documentation.

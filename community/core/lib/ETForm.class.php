@@ -148,7 +148,7 @@ public function getFieldsInSection($section)
 	$fields = array();
 	if (isset($this->fields[$section])) {
 		foreach ($this->fields[$section] as $name => $callbacks) {
-			$fields[$name] = call_user_func($callbacks["renderCallback"], $this);
+			$fields[$name] = call_user_func_array($callbacks["renderCallback"], array($this));
 		}
 	}
 	return $fields;
@@ -165,7 +165,8 @@ public function runFieldCallbacks(&$collector = null)
 {
 	foreach ($this->fields as $fields) {
 		foreach ($fields as $k => $callbacks) {
-			if ($callbacks["processCallback"] !== null) call_user_func_array($callbacks["processCallback"], array($this, $k, &$collector));
+			if ($callbacks["processCallback"] !== null)
+				call_user_func_array($callbacks["processCallback"], array($this, $k, &$collector));
 		}
 	}
 }
@@ -179,10 +180,10 @@ public function runFieldCallbacks(&$collector = null)
  */
 public function open()
 {
-	$this->addHidden("token", ET::$session->token, true);
+	$this->addHidden("token", ET::$session->token);
 	$hidden = "";
-	foreach ($this->hiddenInputs as $field => $value)
-		$hidden .= "<input type='hidden' name='$field' value='".htmlentities($value, ENT_QUOTES, "UTF-8")."'/>\n";
+	foreach ($this->hiddenInputs as $field)
+		$hidden .= "<input type='hidden' name='$field' value='".htmlentities($this->getValue($field), ENT_QUOTES, "UTF-8")."'/>\n";
 
 	return "<form action='$this->action' method='post' enctype='multipart/form-data'>\n".$hidden;
 }
@@ -280,6 +281,10 @@ public function getValue($field, $default = "")
 		}
 
 		// If it's just a normal field name, get the value straight from POST.
+		// We don't return the $default value here, because we know this is a postback 
+		// and therefore we can assume that whatever data has been posted back is what
+		// we want to use. This is important especially for checkboxes ($_POST['checkbox']
+		// isn't set, but that implies that its value is empty, not whatever $default is.)
 		else return isset($_POST[$field]) ? $_POST[$field] : "";
 	}
 	else
@@ -329,12 +334,12 @@ public function setValues($values)
  *
  * @param string $name The name of the field.
  * @param string $value The value of the hidden input.
- * @param bool $forceValue Whether or not to force the value, and never use the value that has been posted back.
  * @return void
  */
-public function addHidden($name, $value, $forceValue = false)
+public function addHidden($name, $value)
 {
-	$this->hiddenInputs[$name] = $forceValue ? $value : $this->getValue($name, $value);
+	$this->hiddenInputs[] = $name;
+	$this->setValue($name, $value);
 }
 
 
@@ -349,10 +354,6 @@ public function addHidden($name, $value, $forceValue = false)
 public function input($name, $type = "text", $attributes = array())
 {
 	$attributes["name"] = $name;
-
-	// If this is a textarea, a text input, or a password input, add the "text" class.
-	// if ($type == "textarea" or $type == "text" or $type == "password")
-	// 	$this->addClass($attributes, "text");
 
 	// If there's an error for this field, add the "error" class.
 	if (!empty($this->errors[$name])) $this->addClass($attributes, "error");
@@ -424,11 +425,11 @@ public function select($name, $options, $attributes = array())
 	$select = "<select".$this->getAttributes($attributes).">\n";
 
 	// Get the currently-selected value of this field.
-	$value = $this->getValue($name);
+	$values = (array)$this->getValue($name);
 
 	// Loop through the options and add a tag for each one, selecting the appropriate one.
 	foreach ($options as $k => $v)
-		$select .= "<option value='$k'".($value == $k ? " selected='selected'" : "").">$v</option>\n";
+		$select .= "<option value='$k'".(in_array($k, $values) ? " selected='selected'" : "").">$v</option>\n";
 
 	$select .= "</select>";
 
@@ -486,7 +487,10 @@ public function radio($name, $value, $attributes = array())
 public function button($name, $label = "", $attributes = array())
 {
 	$this->addClass($attributes, "button");
-	return "<input type='submit' name='$name' value='$label'".$this->getAttributes($attributes)."/>";
+	if (isset($attributes["tag"]) and $attributes["tag"] == "button")
+		return "<button type='submit' name='$name'".$this->getAttributes($attributes).">$label</button>";
+	else
+		return "<input type='submit' name='$name' value='$label'".$this->getAttributes($attributes)."/>";
 }
 
 

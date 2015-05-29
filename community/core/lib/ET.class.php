@@ -151,13 +151,32 @@ public static function trigger($event, $parameters = array())
 
 
 /**
+ * Trigger an event and call event handlers within plugins, stopping and returning the first
+ * non-null value that is returned.
+ *
+ * @param string $event The name of the event.
+ * @param array $parameters An array of parameters to pass to the event handlers as arguments.
+ * @return array The value returned by the first event handler to return a non-null value.
+ */
+public static function first($event, $parameters = array())
+{
+	foreach (self::$plugins as $plugin) {
+		if (method_exists($plugin, "handler_$event")) {
+			$return = call_user_func_array(array($plugin, "handler_$event"), $parameters);
+			if ($return !== null) return $return;
+		}
+	}
+}
+
+
+/**
  * Check for updates to the esoTalk software.
  *
  * @return array|bool The new version information, or false if we are running the latest version.
  */
 public static function checkForUpdates()
 {
-	$json = file_get_contents("http://get.esotalk.org/versions.txt");
+	$json = @file_get_contents("http://esotalk.org/versions.json");
 	$packages = json_decode($json, true);
 
 	// Compare the installed version and the latest version. Show a message if there is a new version.
@@ -276,6 +295,9 @@ public static function loadLanguage($language = "")
 	// Load the main definitions file.
 	$languagePath = PATH_LANGUAGES."/".sanitizeFileName(self::$language);
 	self::loadDefinitions("$languagePath/definitions.php");
+
+	// Set the locale.
+	if (isset(ET::$languageInfo[self::$language]["locale"])) setlocale(LC_ALL, ET::$languageInfo[self::$language]["locale"]);
 
 	// Loop through the loaded plugins and include their definition files, if they exist.
 	foreach (C("esoTalk.enabledPlugins") as $plugin) {

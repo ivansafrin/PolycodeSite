@@ -32,8 +32,10 @@ init: function() {
 	new ETAutoCompletePopup(ETSearch.formInput, "contributor:");
 
 	// Make the controls into a popup button.
-	if ($("#searchControls").length)
+	if ($("#searchControls").length) {
 		$("#search fieldset").append($("#searchControls").popup({alignment: "right"}));
+		$("#search").addClass("hasControls");
+	}
 
 	// Add an onclick handler to the search button to perform a search.
 	ETSearch.form.submit(function(e) {
@@ -66,7 +68,7 @@ init: function() {
 		$("#gambits").addClass("popup").css({
 			position: "absolute",
 			top: input.offset().top + input.outerHeight() + 5,
-			left: input.offset().left + input.outerWidth() - $("#gambits").outerWidth()
+			left: input.offset().left
 		}).fadeIn("fast");
 	});
 
@@ -208,10 +210,12 @@ getConversationIdForElement: function(elm) {
 initSearchResults: function() {
 
 	// Make all "private" labels show a list of members allowed when they are moused over.
-	ETMembersAllowedTooltip.init($("#conversations .label-private"), function(elm) {return ETSearch.getConversationIdForElement(elm)});
+	ETMembersAllowedTooltip.init($("#conversations .label.label-private"), function(elm) {return ETSearch.getConversationIdForElement(elm)});
 	ETMembersAllowedTooltip.showDelay = 500;
 
-	$("#conversations .unreadIndicator").tooltip({alignment: "left", className: "withArrow withArrowBottom"});
+	$("#conversations .starButton").tooltip();
+	$("#conversations .unreadIndicator").tooltip();
+	$("#conversations .label").tooltip();
 
 },
 

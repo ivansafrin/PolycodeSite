@@ -23,8 +23,6 @@ public function init()
 	// Set the master view to the message master view.
 	$this->masterView = "message.master";
 	$this->title = T("Upgrade esoTalk");
-
-	$this->trigger("init");
 }
 
 
@@ -33,7 +31,7 @@ public function init()
  *
  * @return void
  */
-public function index()
+public function action_index()
 {
 	try {
 

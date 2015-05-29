@@ -40,7 +40,7 @@ class ETPlugin_SMTP extends ETPlugin {
 	{
 		// Set up the settings form.
 		$form = ETFactory::make("form");
-		$form->action = URL("admin/plugins");
+		$form->action = URL("admin/plugins/settings/SMTP");
 		$form->setValue("server", C("plugin.SMTP.server"));
 		$form->setValue("username", C("plugin.SMTP.username"));
 		$form->setValue("password", C("plugin.SMTP.password"));
@@ -63,13 +63,13 @@ class ETPlugin_SMTP extends ETPlugin {
 				// Write the config file.
 				ET::writeConfig($config);
 
-				$sender->message(T("message.changesSaved"), "success");
+				$sender->message(T("message.changesSaved"), "success autoDismiss");
 				$sender->redirect(URL("admin/plugins"));
 
 			}
 		}
 
 		$sender->data("smtpSettingsForm", $form);
-		return $this->getView("settings");
+		return $this->view("settings");
 	}
 }

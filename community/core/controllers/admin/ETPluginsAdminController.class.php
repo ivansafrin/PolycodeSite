@@ -17,7 +17,7 @@ class ETPluginsAdminController extends ETAdminController {
  *
  * @return void
  */
-public function index()
+public function action_index()
 {
 	$plugins = $this->getPlugins();
 
@@ -43,20 +43,20 @@ protected function getPlugins()
 
 				// Add the plugin's information and status to the array.
 				$plugins[$file] = array(
-					"loaded" => in_array($file, C("esoTalk.enabledPlugins")),
-					"info" => ET::$pluginInfo[$file],
-					"settingsView" => false
+					"loaded"   => in_array($file, C("esoTalk.enabledPlugins")),
+					"info"     => ET::$pluginInfo[$file],
+					"settings" => false
 				);
 
 				// If this skin's settings function returns a view path, then store it.
-				if ($plugins[$file]["loaded"]) $plugins[$file]["settingsView"] = ET::$plugins[$file]->settings($this);
+				if ($plugins[$file]["loaded"]) $plugins[$file]["settings"] = method_exists(ET::$plugins[$file], "settings");
 			}
 
 	    }
 	    closedir($handle);
 	}
 
-	ksort($plugins);
+	ksort($plugins, SORT_NATURAL | SORT_FLAG_CASE);
 
 	return $plugins;
 }
@@ -68,7 +68,7 @@ protected function getPlugins()
  * @param string $plugin The name of the plugin.
  * @return void
  */
-public function toggle($plugin = "")
+public function action_toggle($plugin = "")
 {
 	if (!$this->validateToken()) return;
 
@@ -90,7 +90,9 @@ public function toggle($plugin = "")
 
 	// Otherwise, if it's not enabled, add it to the array.
 	else {
-		$enabledPlugins[] = $plugin;
+		if (isset($plugins[$plugin]["info"]["priority"]))
+			addToArray($enabledPlugins, $plugin, $plugins[$plugin]["info"]["priority"]);
+		else $enabledPlugins[] = $plugin;
 
 		// Check the plugin's dependencies.
 		$dependencyFailure = false;
@@ -117,14 +119,16 @@ public function toggle($plugin = "")
 		if (file_exists($file = PATH_PLUGINS."/".sanitizeFileName($plugin)."/plugin.php")) include_once $file;
 		$className = "ETPlugin_$plugin";
 		if (class_exists($className)) {
-			$pluginObject = new $className;
+			$pluginObject = new $className("addons/plugins/".$plugin);
 
 			// Call the plugin's setup function. If the setup failed, show a message.
-			if (($msg = $pluginObject->setup()) !== true) {
+			if (($msg = $pluginObject->setup(C("$plugin.version"))) !== true) {
 				$this->message(sprintf(T("message.pluginCannotBeEnabled"), $plugin, $msg), "warning");
 				$this->redirect(URL("admin/plugins"));
 				return;
 			}
+
+			ET::writeConfig(array("$plugin.version" => ET::$pluginInfo[$plugin]["version"]));
 		}
 	}
 
@@ -141,15 +145,22 @@ public function toggle($plugin = "")
  * @param string $plugin The name of the plugin.
  * @return void
  */
-public function settings($plugin = "")
+public function action_settings($plugin = "")
 {
 	// Get the plugin.
 	$plugins = $this->getPlugins();
 	if (!$plugin or !array_key_exists($plugin, $plugins)) return;
 	$pluginArray = $plugins[$plugin];
 
-	// Render the pluginSettings view, which will render the plugin's settingsView. lol.
+	// If the plugin isn't loaded or doesn't have settings, we can't access its settings.
+	if (!$pluginArray["loaded"] or !$pluginArray["settings"]) return;
+
+	// Call the plugin's settings function and get the view it wants rendered.
+	$view = ET::$plugins[$plugin]->settings($this);
+
+	// Render the pluginSettings view, which will render the plugin's settings view.
 	$this->data("plugin", $pluginArray);
+	$this->data("view", $view);
 	$this->render("admin/pluginSettings");
 }
 
@@ -160,7 +171,7 @@ public function settings($plugin = "")
  * @param string $plugin The name of the plugin.
  * @return void
  */
-public function uninstall($plugin = "")
+public function action_uninstall($plugin = "")
 {
 	if (!$this->validateToken()) return;
 

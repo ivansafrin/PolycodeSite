@@ -68,8 +68,8 @@ class ETPlugin_Debug extends ETPlugin {
 	public function handler_init()
 	{
 		if (!ET::$session->isAdmin()) return;
-		ET::$controller->addCSSFile($this->getResource("debug.css"), true);
-		ET::$controller->addJSFile($this->getResource("debug.js"), true);
+		ET::$controller->addCSSFile($this->resource("debug.css"), true);
+		ET::$controller->addJSFile($this->resource("debug.js"), true);
 	}
 
 
@@ -171,7 +171,7 @@ class ETPlugin_Debug extends ETPlugin {
 	{
 		// Set up the settings form.
 		$form = ETFactory::make("form");
-		$form->action = URL("admin/plugins");
+		$form->action = URL("admin/plugins/settings/Debug");
 		
 		// If the form was submitted...
 		if ($form->validPostBack("upgradeDB")) {
@@ -179,13 +179,18 @@ class ETPlugin_Debug extends ETPlugin {
 			// Run the upgrade process.
 			ET::upgradeModel()->upgrade();
 
+			// Upgrade plugins as well.
+			foreach (ET::$plugins as $name => $plugin) {
+				$plugin->setup(C("$name.version"));
+			}
+
 			$sender->message(T("message.upgradeSuccessful"), "success");
 			$sender->redirect(URL("admin/plugins"));
 
 		}
 
 		$sender->data("debugSettingsForm", $form);
-		return $this->getView("settings");
+		return $this->view("settings");
 	}
 
 }

@@ -17,7 +17,7 @@ class ETDashboardAdminController extends ETAdminController {
  *
  * @return void
  */
-public function index()
+public function action_index()
 {
 	$this->title = T("Dashboard");
 
@@ -64,7 +64,7 @@ public function index()
  *
  * @return void
  */
-public function news()
+public function action_news()
 {
 	// Check for updates and add the update notification view to the response.
 	ET::upgradeModel()->checkForUpdates();
@@ -73,7 +73,7 @@ public function news()
 	// Now fetch the latest posts from the esoTalk blog.
 	// Thanks to Brian for this code.
 	// (http://stackoverflow.com/questions/250679/best-way-to-parse-rss-atom-feeds-with-php/251102#251102)
-	$xmlSource = file_get_contents("http://esotalk.org/blog/index.php/feed/");
+	$xmlSource = file_get_contents("http://esotalk.org/blog/feed/");
 	$x = simplexml_load_string($xmlSource);
 	$posts = array();
 
@@ -96,6 +96,8 @@ public function news()
 
 		$post["summary"] = $summary;
 		$posts[] = $post;
+
+		if (count($posts) >= 3) break;
 
 	}
 

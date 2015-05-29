@@ -55,10 +55,6 @@ public function create(&$values)
 	$values["password"] = $this->hashPassword($values["password"]);
 	$values["joinTime"] = time();
 
-	// MD5 the "reset password" hash for storage (for extra safety).
-	$oldHash = isset($values["resetPassword"]) ? $values["resetPassword"] : null;
-	if (isset($values["resetPassword"])) $values["resetPassword"] = md5($values["resetPassword"]);
-
 	// Set default preferences.
 	if (empty($values["preferences"])) {
 		$preferences = array("email.privateAdd", "email.post", "starOnReply");
@@ -70,19 +66,11 @@ public function create(&$values)
 
 	if ($this->errorCount()) return false;
 
-	// Delete any members with the same email or username but who haven't confirmed their email address.
-	ET::SQL()
-		->delete()
-		->from("member")
-		->where("email=:email OR username=:username")
-		->bind(":email", $values["email"])
-		->bind(":username", $values["username"])
-		->where("confirmedEmail", 0)
-		->exec();
-
 	$memberId = parent::create($values);
 	$values["memberId"] = $memberId;
 
+	$this->trigger("createAfter", array($values));
+	
 	// Create "join" activity for this member.
 	ET::activityModel()->create("join", $values);
 
@@ -99,9 +87,6 @@ public function create(&$values)
 			->setMultiple(array("memberId", "channelId", "unsubscribed"), $inserts)
 			->exec();
 	}
-
-	// Revert the "reset password" hash to what it was before we MD5'd it.
-	$values["resetPassword"] = $oldHash;
 
 	return $memberId;
 }
@@ -129,9 +114,6 @@ public function update($values, $wheres = array())
 
 	// Serialize preferences.
 	if (isset($values["preferences"])) $values["preferences"] = serialize($values["preferences"]);
-
-	// MD5 the "reset password" hash for storage (for extra safety).
-	if (isset($values["resetPassword"])) $values["resetPassword"] = md5($values["resetPassword"]);
 
 	if ($this->errorCount()) return false;
 
@@ -172,21 +154,6 @@ public function getWithSQL($sql)
 
 
 /**
- * Get standardized member data.
- *
- * @param array $wheres An array of where conditions.
- * @return array An array of members and their details.
- */
-public function get($wheres = array())
-{
-	$sql = ET::SQL();
-	$sql->where($wheres);
-
-	return $this->getWithSQL($sql);
-}
-
-
-/**
  * Get member data for the specified post ID.
  *
  * @param int $memberId The ID of the member.
@@ -199,7 +166,7 @@ public function getById($memberId)
 
 
 /**
- * Get member data for the specified post IDs, in the same order.
+ * Get member data for the specified member IDs, in the same order.
  *
  * @param array $ids The IDs of the members to fetch.
  * @return array An array of member details, ordered by the order of the IDs.
@@ -280,7 +247,7 @@ public function validateUsername($username, $checkForDuplicate = true)
 	if (strlen($username) < 3 or strlen($username) > 20) return "invalidUsername";
 
 	// Make sure there's no other member with the same username.
-	if ($checkForDuplicate and ET::SQL()->select("1")->from("member")->where("username=:username")->where("confirmedEmail=1")->bind(":username", $username)->exec()->numRows())
+	if ($checkForDuplicate and ET::SQL()->select("1")->from("member")->where("username=:username")->bind(":username", $username)->exec()->numRows())
 		return "nameTaken";
 }
 
@@ -298,7 +265,7 @@ public function validateEmail($email, $checkForDuplicate = true)
 	if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return "invalidEmail";
 
 	// Make sure there's no other member with the same email.
-	if ($checkForDuplicate and ET::SQL()->select("1")->from("member")->where("email=:email")->where("confirmedEmail=1")->bind(":email", $email)->exec()->numRows())
+	if ($checkForDuplicate and ET::SQL()->select("1")->from("member")->where("email=:email")->bind(":email", $email)->exec()->numRows())
 		return "emailTaken";
 }
 

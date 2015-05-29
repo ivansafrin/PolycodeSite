@@ -22,13 +22,9 @@ class ETMembersController extends ETController {
  * 		- A letter to start from, if $orderBy is "name".
  * @return void
  */
-public function index($orderBy = false, $start = 0)
+public function action_index($orderBy = false, $start = 0)
 {
-	// Check if we have permission to view the member list.
-	if (!C("esoTalk.members.visibleToGuests") and !ET::$session->user) {
-		$this->render404(T("message.pageNotFound"));
-		return false;
-	}
+	if (!$this->allowed("esoTalk.members.visibleToGuests")) return;
 
 	// Begin constructing a query to fetch results.
 	$sql = ET::SQL()->from("member m");
@@ -46,17 +42,18 @@ public function index($orderBy = false, $start = 0)
 		$groups[GROUP_ID_GUEST] = array("name" => ACCOUNT_SUSPENDED);
 
 		$conditions = array();
-		$bindings = array();
+
+		$this->trigger("parseTerms", array(&$terms, $sql, &$conditions));
 
 		foreach ($terms as $k => $term) {
 
 			$term = strtolower(trim($term));
 
-			// If the search string matches any group names, then we'll filter members by their account/group.
+			// If the search string matches the start of any group names, then we'll filter members by their account/group.
 			$group = false;
 			foreach ($groups as $id => $g) {
 				$name = $g["name"];
-				if (strtolower(T("group.$name", $name)) == $term or strtolower(T("group.$name.plural", $name)) == $term) {
+				if (strpos(strtolower(T("group.$name", $name)), $term) === 0 or strpos(strtolower(T("group.$name.plural", $name)), $term) === 0) {
 					$group = $id;
 					break;
 				}
@@ -75,11 +72,9 @@ public function index($orderBy = false, $start = 0)
 				}
 			}
 
-			// If there were no matching groups, just perform a normal LIKE search.
-			else {
-				$conditions[] = "username LIKE :search$k";
-				$sql->bind(":search$k", $term."%");
-			}
+			// Also perform a normal LIKE search.
+			$conditions[] = "username LIKE :search$k";
+			$sql->bind(":search$k", "%".$term."%");
 
 		}
 
@@ -181,7 +176,7 @@ public function index($orderBy = false, $start = 0)
 		$this->addJSVar("startFrom", $start);
 		$this->addJSVar("searchString", $searchString);
 		$this->addJSVar("orderBy", $orderBy);
-
+                $this->addJSLanguage("Sort By");
 	}
 
 	// Pass data to the view.
@@ -207,7 +202,7 @@ public function index($orderBy = false, $start = 0)
  *
  * @return void
  */
-public function create()
+public function action_create()
 {
 	// Non-admins can't do this! Suckers.
 	if (!ET::$session->isAdmin()) return;
@@ -231,11 +226,11 @@ public function create()
 		if (!$form->errorCount()) {
 
 			$data = array(
-				"username" => $form->getValue("username"),
-				"email" => $form->getValue("email"),
-				"password" => $form->getValue("password"),
-				"account" => ACCOUNT_MEMBER,
-				"confirmedEmail" => true
+				"username"  => $form->getValue("username"),
+				"email"     => $form->getValue("email"),
+				"password"  => $form->getValue("password"),
+				"account"   => ACCOUNT_MEMBER,
+				"confirmed" => true
 			);
 
 			$model = ET::memberModel();
@@ -261,7 +256,7 @@ public function create()
  *
  * @return void
  */
-public function online()
+public function action_online()
 {
 	// Check if we have permission to view the online list.
 	if (!C("esoTalk.members.visibleToGuests") and !ET::$session->user) {
@@ -303,13 +298,13 @@ public function online()
  * @param string $input The string to match member usernames against.
  * @return void
  */
-public function autocomplete($input = "")
+public function action_autocomplete($input = "")
 {
 	// Force the response type to JSON.
 	$this->responseType = RESPONSE_TYPE_JSON;
 
 	// Don't do this for strings less than three characters for performance reasons.
-	if (strlen($input) < 3) return;
+	if (strlen($input) < 2) return;
 
 	// Construct a query to fetch matching members.
 	$results = ET::SQL()

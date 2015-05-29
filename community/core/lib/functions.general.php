@@ -215,8 +215,7 @@ function sendEmail($to, $subject, $body)
 	require_once($phpmailer);
 	$mail = new PHPMailer(true);
 
-	if (($return = ET::trigger("sendEmailBefore", array($mail, &$to, &$subject, &$body))) and !empty($return))
-		return reset($return);
+	if ($return = ET::first("sendEmailBefore", array($mail, &$to, &$subject, &$body))) return $return;
 
 	$mail->CharSet = 'UTF-8';
 	$mail->IsHTML(true);
@@ -268,11 +267,15 @@ function parseRequest($parts, $controllers)
 			if (in_array($suffix, array(RESPONSE_TYPE_VIEW, RESPONSE_TYPE_JSON, RESPONSE_TYPE_AJAX, RESPONSE_TYPE_ATOM))) $type = $suffix;
 		}
 
-		// Get all of the immediately public methods in the controller class.
+		// Get all of the action methods in the controller class.
 		$methods = get_class_methods($controller);
-		$parentMethods = get_class_methods(get_parent_class($controller));
-		$methods = array_diff($methods, $parentMethods);
-		foreach ($methods as $k => $v) $methods[$k] = strtolower($v);
+		foreach ($methods as $k => $v) {
+			if (strpos($v = strtolower($v), "action_") !== 0) {
+				unset($methods[$k]);
+				continue;
+			}
+			$methods[$k] = substr($v, 7);
+		}
 
 		// If the method we want to use doesn't exist in the controller...
 		if (!$method or !in_array($method, $methods)) {
@@ -280,13 +283,13 @@ function parseRequest($parts, $controllers)
 			// Search for a plugin with this method. If found, use that.
 			$found = false;
 			foreach (ET::$plugins as $plugin) {
-				if (method_exists($plugin, $c."Controller_".$method)) {
+				if (method_exists($plugin, "action_".$c."Controller_".$method)) {
 					$found = true;
 					break;
 				}
 			}
 
-			// If one wasn't found, default to the "index" method.
+			// If one wasn't found, default to the "action_index" method.
 			if (!$found) {
 				$method = "index";
 				$arguments = array_slice($parts, 1);
@@ -402,8 +405,8 @@ function isMobileBrowser()
  *
  * @package esoTalk
  */
-function slug($string) {
-	
+function slug($string)
+{
 	// If there are any characters other than basic alphanumeric, space, punctuation, then we need to attempt transliteration.
 	if (preg_match("/[^\x20-\x7f]/", $string)) {
 	
@@ -448,6 +451,9 @@ function slug($string) {
 		}
 
 	}
+
+	// Allow plugins to alter the slug.
+	ET::trigger("slug", array(&$string));
 
 	// Now replace non-alphanumeric characters with a hyphen, and remove multiple hyphens.
 	$slug = strtolower(trim(preg_replace(array("/[^0-9a-z]/i", "/-+/"), "-", $string), "-"));
@@ -714,7 +720,7 @@ function json_decode($json)
  */
 function URL($url = "", $absolute = false)
 {
-	if (strpos($url, "http://") === 0) return $url;
+	if (preg_match('/^(https?\:)?\/\//', $url)) return $url;
 	
 	// Strip off the hash.
 	$hash = strstr($url, "#");
@@ -842,7 +848,7 @@ function relativeTime($then, $precise = false)
 	// Work out how many seconds it has been since $then.
 	$ago = time() - $then;
 
-	// If $then happened less than 1 second ago (or is yet to happen,) say "Just now".
+	// If $then happened less than 1 second ago, say "Just now".
 	if ($ago < 1) return T("just now");
 
 	// If this happened over a year ago, return "x years ago".
@@ -891,6 +897,31 @@ function relativeTime($then, $precise = false)
 
 	// Otherwise, just return "Just now".
 	return T("just now");
+}
+
+
+/**
+ * Get a smart human-friendly string for a date.
+ *
+ * @param int $then UNIX timestamp of the time to work out how much time has passed since.
+ * @param bool $precise Whether or not to return "x minutes/seconds", or just "a few minutes".
+ * @return string A human-friendly time string.
+ *
+ * @package esoTalk
+ */
+function smartTime($then, $precise = false)
+{
+	// Work out how many seconds it has been since $then.
+	$ago = time() - $then;
+
+	// If the time was within the last 48 hours, show a relative time (eg. 2 hours ago.)
+	if ($ago >= 0 and $ago < 48 * 60 * 60) return relativeTime($then, $precise);
+
+	// If the time is within the last half a year or the next half a year, show just a month and a day.
+	elseif ($ago < 180 * 24 * 60 * 60) return strftime("%b %e", $then);
+
+	// Otherwise, show the month, day, and year.
+	else return strftime(($precise ? "%e " : "")."%b %Y", $then);
 }
 
 

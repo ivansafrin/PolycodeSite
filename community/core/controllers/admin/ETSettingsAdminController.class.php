@@ -18,7 +18,7 @@ class ETSettingsAdminController extends ETAdminController {
  *
  * @return void
  */
-public function index()
+public function action_index()
 {
 	// Make an array of languages for the default forum language select.
 	$languages = array();
@@ -38,10 +38,10 @@ public function index()
 	$form->setValue("language", C("esoTalk.language"));
 	$form->setValue("forumHeader", C("esoTalk.forumLogo") ? "image" : "title");
 	$form->setValue("defaultRoute", C("esoTalk.defaultRoute"));
-	$form->setValue("registrationOpen", C("esoTalk.registration.open"));
+	$form->setValue("forumVisibleToGuests", C("esoTalk.visibleToGuests"));
 	$form->setValue("memberListVisibleToGuests", C("esoTalk.members.visibleToGuests"));
-	$form->setValue("requireAdminApproval", C("esoTalk.registration.requireAdminApproval"));
-	$form->setValue("requireEmailConfirmation", C("esoTalk.registration.requireEmailConfirmation"));
+	$form->setValue("registrationOpen", C("esoTalk.registration.open"));
+	$form->setValue("requireConfirmation", C("esoTalk.registration.requireConfirmation"));
 
 	$c = C("esoTalk.conversation.editPostTimeLimit");
 	if ($c === -1) $form->setValue("editPostMode", "forever");
@@ -61,9 +61,10 @@ public function index()
 			"esoTalk.language" => $form->getValue("language"),
 			"esoTalk.forumLogo" => $form->getValue("forumHeader") == "image" ? $this->uploadHeaderImage($form) : false,
 			"esoTalk.defaultRoute" => $form->getValue("defaultRoute"),
+			"esoTalk.visibleToGuests" => $form->getValue("forumVisibleToGuests"),
+			"esoTalk.members.visibleToGuests" => $form->getValue("forumVisibleToGuests") and $form->getValue("memberListVisibleToGuests"),
 			"esoTalk.registration.open" => $form->getValue("registrationOpen"),
-			"esoTalk.registration.requireEmailConfirmation" => $form->getValue("requireEmailConfirmation"),
-			"esoTalk.members.visibleToGuests" => $form->getValue("memberListVisibleToGuests")
+			"esoTalk.registration.requireConfirmation" => in_array($v = $form->getValue("requireConfirmation"), array(false, "email", "approval")) ? $v : false,
 		);
 
 		switch ($form->getValue("editPostMode")) {
@@ -77,7 +78,7 @@ public function index()
 
 		if (!$form->errorCount()) {
 			ET::writeConfig($config);
-			$this->message(T("message.changesSaved"), "success");
+			$this->message(T("message.changesSaved"), "success autoDismiss");
 			$this->redirect(URL("admin/settings"));
 		}
 

@@ -28,7 +28,6 @@ endif;
 
 <span class='group subText'><?php echo memberGroup($member["account"], $member["groups"]); ?></span>
 
-<?php if (ET::$session->user): ?><a href='<?php echo URL("conversation/start/".urlencode($member["username"])."?token=".ET::$session->token); ?>' class='controls label label-private'><?php echo T("label.private"); ?></a><?php endif; ?>
 </div>
 
 <div class='col-lastActive'>

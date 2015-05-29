@@ -62,23 +62,25 @@ $(function() {
 <li class='sep'></li>
 
 <li>
-<label><?php echo T("Registration"); ?></label>
-<div class='subText'><?php echo T("Customize how users can become members of your forum."); ?></div>
+<label><?php echo T("Forum privacy"); ?></label>
+<div class='subText'><?php echo T("Guests can view the:"); ?></div>
 <div class='checkboxGroup'>
-<label class='radio'><?php echo $form->radio("registrationOpen", 0); ?> <?php echo T("Close registration"); ?></label>
-<label class='radio'><?php echo $form->radio("registrationOpen", 1); ?> <?php echo T("Open registration"); ?></label>
-<label class='checkbox indent'><?php echo $form->checkbox("requireEmailConfirmation"); ?> <?php echo T("Require users to confirm their email address"); ?></label>
+<label class='checkbox'><?php echo $form->checkbox("forumVisibleToGuests"); ?> <?php echo T("Forum"); ?></label>
+<label class='checkbox'><?php echo $form->checkbox("memberListVisibleToGuests"); ?> <?php echo T("Member list"); ?></label>
 </div>
 </li>
 
 <li class='sep'></li>
 
 <li>
-<label><?php echo T("Member privacy"); ?></label>
-<div class='subText'><?php echo T("Make member and online list visible to:"); ?></div>
+<label><?php echo T("Registration"); ?></label>
+<div class='subText'><?php echo T("Customize how users can become members of your forum."); ?></div>
 <div class='checkboxGroup'>
-<label class='radio'><?php echo $form->radio("memberListVisibleToGuests", 0); ?> <?php echo T("Registered members"); ?></label>
-<label class='radio'><?php echo $form->radio("memberListVisibleToGuests", 1); ?> <?php echo T("Everyone"); ?></label>
+<label class='radio'><?php echo $form->radio("registrationOpen", 0); ?> <?php echo T("Close registration"); ?></label>
+<label class='radio'><?php echo $form->radio("registrationOpen", 1); ?> <?php echo T("Open registration"); ?></label>
+<label class='radio indent'><?php echo $form->radio("requireConfirmation", false); ?> <?php echo T("Don't require users to confirm their account"); ?></label>
+<label class='radio indent'><?php echo $form->radio("requireConfirmation", "email"); ?> <?php echo T("Require users to confirm their email address"); ?></label>
+<label class='radio indent'><?php echo $form->radio("requireConfirmation", "approval"); ?> <?php echo T("Require administrator approval"); ?></label>
 </div>
 </li>
 

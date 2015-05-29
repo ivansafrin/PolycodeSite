@@ -19,8 +19,10 @@ class ETConversationsController extends ETController {
  *
  * @return void
  */
-function index($channelSlug = false)
+public function action_index($channelSlug = false)
 {
+	if (!$this->allowed()) return;
+	
 	list($channelInfo, $currentChannels, $channelIds, $includeDescendants) = $this->getSelectedChannels($channelSlug);
 
 	// Now we need to construct some arrays to determine which channel "tabs" to show in the view.
@@ -147,10 +149,10 @@ function index($channelSlug = false)
 
 		// Add some more personal gambits if there is a user logged in.
 		if (ET::$session->user) {
-			addToArrayString($gambits["main"], T("gambit.private"), array("gambit-private", "icon-envelope"), 1);
+			addToArrayString($gambits["main"], T("gambit.private"), array("gambit-private", "icon-envelope-alt"), 1);
 			addToArrayString($gambits["main"], T("gambit.starred"), array("gambit-starred", "icon-star"), 2);
 			addToArrayString($gambits["main"], T("gambit.draft"), array("gambit-draft", "icon-pencil"), 3);
-			addToArrayString($gambits["main"], T("gambit.muted"), array("gambit-muted", "icon-eye-close"), 4);
+			addToArrayString($gambits["main"], T("gambit.ignored"), array("gambit-ignored", "icon-eye-close"), 4);
 			addToArrayString($gambits["time"], T("gambit.unread"), array("gambit-unread", "icon-inbox"), 0);
 			addToArrayString($gambits["member"], T("gambit.author:").T("gambit.myself"), array("gambit-authorMyself", "icon-smile"), 0);
 			addToArrayString($gambits["member"], T("gambit.contributor:").T("gambit.myself"), array("gambit-contributorMyself", "icon-smile"), 2);
@@ -321,7 +323,7 @@ protected function getSelectedChannels($channelSlug = "")
  *
  * @return void
  */
-public function markAllAsRead()
+public function action_markAllAsRead()
 {
 	// Update the user's preferences.
 	ET::$session->setPreferences(array("markedAllConversationsAsRead" => time()));
@@ -339,13 +341,13 @@ public function markAllAsRead()
  *
  * @return void
  */
-public function markAsRead($channelSlug = false)
+public function action_markAsRead($channelSlug = false)
 {
 	// We simply let the index method handle this, because we want to perform a search like normal
 	// but then mark the results as read before we display them. The index method will check if the 
 	// original method called on the controller was "markAsRead" and if it is, mark the results as
 	// read.
-	$this->index($channelSlug);
+	$this->action_index($channelSlug);
 }
 
 
@@ -357,7 +359,7 @@ public function markAsRead($channelSlug = false)
  * @param string $query The search query.
  * @return void
  */
-public function update($channelSlug = "", $query = "")
+public function action_update($channelSlug = "", $query = "")
 {
 	// This must be done as an AJAX request.
 	$this->responseType = RESPONSE_TYPE_AJAX;

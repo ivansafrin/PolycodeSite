@@ -23,8 +23,10 @@ class ETConversationController extends ETController {
  * @param int $month If specified, the YYYY/MM combination will be used.
  * @return void
  */
-public function index($conversationId = false, $year = false, $month = false)
+public function action_index($conversationId = false, $year = false, $month = false)
 {
+	if (!$this->allowed()) return;
+	
 	// Get the conversation.
 	$conversation = ET::conversationModel()->getById((int)$conversationId);
 
@@ -144,7 +146,7 @@ public function index($conversationId = false, $year = false, $month = false)
 
 		// If we're on the last page, mark any notifications related to this conversation as read.
 		if ($startFrom + C("esoTalk.conversation.postsPerPage") >= $conversation["countPosts"]) {
-			ET::activityModel()->markNotificationsAsRead($conversation["conversationId"]);
+			ET::activityModel()->markNotificationsAsRead(null, $conversation["conversationId"]);
 		}
 
 		// Update the user's last action.
@@ -199,9 +201,15 @@ public function index($conversationId = false, $year = false, $month = false)
 
 		// Add essential variables and language definitions to be accessible through JavaScript.
 		if ($conversation["canModerate"]) {
-			$this->addJSLanguage("Lock", "Unlock", "Sticky", "Unsticky", "message.confirmDelete");
+			$this->addJSLanguage("Lock", "Unlock", "Sticky", "Unsticky");
 		}
-		if (ET::$session->user) $this->addJSLanguage("Starred", "Unstarred", "message.confirmLeave", "message.confirmDiscardReply", "Mute conversation", "Unmute conversation", "Controls");
+		if ($conversation["canDeleteConversation"]) {
+			$this->addJSLanguage("message.confirmDelete");
+		}
+		if (ET::$session->user) {
+			$this->addJSLanguage("Starred", "Unstarred", "message.confirmLeave", "message.confirmDiscardPost",
+				"Ignore conversation", "Unignore conversation", "Controls", "Follow", "Following");
+		}
 
 		$this->addJSVar("postsPerPage", C("esoTalk.conversation.postsPerPage"));
 		$this->addJSVar("conversationUpdateIntervalStart", C("esoTalk.conversation.updateIntervalStart"));
@@ -219,9 +227,9 @@ public function index($conversationId = false, $year = false, $month = false)
 
 		$controls = ETFactory::make("menu");
 
-		// Mute conversation control
+		// Ignore conversation control
 		if (ET::$session->user) {
-			$controls->add("mute", "<a href='".URL("conversation/mute/".$conversation["conversationId"]."/?token=".ET::$session->token."&return=".urlencode($this->selfURL))."' id='control-mute'><i class='icon-eye-close'></i> <span>".T($conversation["muted"] ? "Unmute conversation" : "Mute conversation")."</span></a>");
+			$controls->add("ignore", "<a href='".URL("conversation/ignore/".$conversation["conversationId"]."/?token=".ET::$session->token."&return=".urlencode($this->selfURL))."' id='control-ignore'><i class='icon-eye-close'></i> <span>".T($conversation["ignored"] ? "Unignore conversation" : "Ignore conversation")."</span></a>");
 		}
 
 		// Mark as unread/read control
@@ -244,10 +252,14 @@ public function index($conversationId = false, $year = false, $month = false)
 
 			// Add the lock/unlock control.
 			$controls->add("lock", "<a href='".URL("conversation/lock/".$conversation["conversationId"]."/?token=".ET::$session->token."&return=".urlencode($this->selfURL))."' id='control-lock'><i class='icon-lock'></i> <span>".T($conversation["locked"] ? "Unlock" : "Lock")."</span></a>");
+		}
+
+		if ($conversation["canDeleteConversation"]) {
 
 			// Add the delete conversation control.
 			$controls->separator();
 			$controls->add("delete", "<a href='".URL("conversation/delete/".$conversation["conversationId"]."/?token=".ET::$session->token)."' id='control-delete'><i class='icon-remove'></i> <span>".T("Delete conversation")."</span></a>");
+
 		}
 
 		// Add the meta description tag to the head. It will contain an excerpt from the first post's content.
@@ -326,7 +338,7 @@ public function index($conversationId = false, $year = false, $month = false)
  * @param string $member A member's name to make the conversation private with.
  * @return void
  */
-public function start($member = false)
+public function action_start($member = false)
 {
 	// If the user isn't logged in, redirect them to the login page.
 	if (!ET::$session->user) $this->redirect(URL("user/login?return=conversation/start"));
@@ -367,7 +379,7 @@ public function start($member = false)
 		$this->addJSFile("core/js/autocomplete.js");
 		$this->addJSFile("core/js/conversation.js");
 		$this->addJSVar("mentions", C("esoTalk.format.mentions"));
-		$this->addJSLanguage("message.confirmLeave", "message.confirmDiscardReply");
+		$this->addJSLanguage("message.confirmLeave", "message.confirmDiscardPost");
 
 		// If there's a member name in the querystring, make the conversation that we're starting private
 		// with them and redirect.
@@ -433,7 +445,7 @@ public function start($member = false)
  * @param int $postId The post ID to show.
  * @return void
  */
-public function post($postId = false)
+public function action_post($postId = false)
 {
 	// Construct a subquery that will find the position of a post within its conversation.
 	$subquery = ET::SQL()
@@ -475,7 +487,7 @@ public function post($postId = false)
  * @param int $postId The post ID.
  * @return void
  */
-public function quotePost($postId = false)
+public function action_quotePost($postId = false)
 {
 	$this->responseType = RESPONSE_TYPE_JSON;
 
@@ -504,22 +516,52 @@ public function quotePost($postId = false)
  * @param int $conversationId The ID of the conversation to delete.
  * @return void
  */
-public function delete($conversationId = false)
+public function action_delete($conversationId = false)
 {
 	if (!$this->validateToken()) return;
 
 	if (!($conversation = $this->getConversation($conversationId))) return;
 
 	// Do we have permission to do this?
-	if (!$conversation["canModerate"]) {
+	if (!$conversation["canDeleteConversation"]) {
 		$this->renderMessage(T("Error"), T("message.noPermission"));
 		return;
 	}
 
 	// Delete the conversation, then redirect to the index.
 	ET::conversationModel()->deleteById($conversation["conversationId"]);
-	$this->message(T("message.conversationDeleted"), "success dismissable");
+	$this->message(T("message.conversationDeleted"), "success autoDismiss");
 	$this->redirect(URL(""));
+}
+
+
+/**
+ * Discard a draft.
+ *
+ * @param int $conversationId The ID of the conversation to discard the draft for.
+ * @return void
+ */
+public function action_discard($conversationId = false)
+{
+	if (!$this->validateToken()) return;
+
+	$conversation = ET::conversationModel()->getById($conversationId) ?: ET::conversationModel()->getEmptyConversation();
+
+	ET::conversationModel()->setDraft($conversation, ET::$session->userId, null);
+
+	// If there are no other posts in the conversation, delete the conversation.
+	if (!$conversation["countPosts"]) {
+		if ($conversation["conversationId"]) $this->action_delete($conversation["conversationId"]);
+		else $this->redirect(URL(""));
+		return;
+	}
+
+	// For an AJAX request, add the conversation labels to the output.
+	if ($this->responseType === RESPONSE_TYPE_AJAX) {
+		$this->json("labels", $this->getViewContents("conversation/labels", array("labels" => $conversation["labels"])));
+		$this->render();
+		return;
+	}
 }
 
 
@@ -529,7 +571,7 @@ public function delete($conversationId = false)
  * @param int $conversationId The ID of the conversation.
  * @return void
  */
-public function sticky($conversationId = false)
+public function action_sticky($conversationId = false)
 {
 	$this->toggle($conversationId, "sticky");
 }
@@ -541,7 +583,7 @@ public function sticky($conversationId = false)
  * @param int $conversationId The ID of the conversation.
  * @return void
  */
-public function lock($conversationId = false)
+public function action_lock($conversationId = false)
 {
 	$this->toggle($conversationId, "locked");
 }
@@ -554,7 +596,7 @@ public function lock($conversationId = false)
  * @param string $type The name of the flag to toggle.
  * @return void
  */
-protected function toggle($conversationId, $type)
+public function toggle($conversationId, $type)
 {
 	if (!$this->validateToken()) return;
 
@@ -589,7 +631,7 @@ protected function toggle($conversationId, $type)
  * @param int $conversationId The ID of the conversation to edit.
  * @return void
  */
-public function edit($conversationId = false)
+public function action_edit($conversationId = false)
 {
 	if (!($conversation = $this->getConversation($conversationId))) return;
 
@@ -628,7 +670,7 @@ public function edit($conversationId = false)
  * @param int $conversationId The ID of the conversation to edit.
  * @return void
  */
-public function changeChannel($conversationId = "")
+public function action_changeChannel($conversationId = "")
 {
 	// Get the conversation.
 	if (!$conversationId) $conversation = ET::conversationModel()->getEmptyConversation();
@@ -672,7 +714,7 @@ public function changeChannel($conversationId = "")
  * @param int $conversationId The conversation ID.
  * @return void
  */
-public function save($conversationId = false)
+public function action_save($conversationId = false)
 {
 	if (!$this->validateToken()) return;
 
@@ -759,7 +801,7 @@ public function save($conversationId = false)
  * @param int $conversationId The ID of the conversation to edit.
  * @return void
  */
-public function membersAllowed($conversationId = false)
+public function action_membersAllowed($conversationId = false)
 {
 	// Get the conversation.
 	if (!$conversationId) $conversation = ET::conversationModel()->getEmptyConversation();
@@ -792,7 +834,7 @@ public function membersAllowed($conversationId = false)
  * @param int $conversationId The ID of the conversation to get members allowed for.
  * @return void
  */
-public function membersAllowedList($conversationId = false)
+public function action_membersAllowedList($conversationId = false)
 {
 	// Get the conversation.
 	if (!$conversationId) $conversation = ET::conversationModel()->getEmptyConversation();
@@ -813,7 +855,7 @@ public function membersAllowedList($conversationId = false)
  * @param int $conversationId The ID of the conversation.
  * @return void
  */
-public function addMember($conversationId = false)
+public function action_addMember($conversationId = false)
 {
 	if (!$this->validateToken()) return;
 
@@ -868,7 +910,7 @@ public function addMember($conversationId = false)
  * @param int $conversationId The ID of the conversation.
  * @return void
  */
-public function removeMember($conversationId = false)
+public function action_removeMember($conversationId = false)
 {
 	if (!$this->validateToken()) return;
 
@@ -922,7 +964,7 @@ public function removeMember($conversationId = false)
  * @param int $conversationId The ID of the conversation.
  * @return void
  */
-public function star($conversationId = false)
+public function action_star($conversationId = false)
 {
 	if (!ET::$session->user or !$this->validateToken()) return;
 
@@ -945,23 +987,23 @@ public function star($conversationId = false)
 
 
 /**
- * Toggle the muted flag of a conversation for the current user.
+ * Toggle the ignored flag of a conversation for the current user.
  *
  * @param int $conversationId The ID of the conversation.
  * @return void
  */
-public function mute($conversationId = false)
+public function action_ignore($conversationId = false)
 {
 	if (!ET::$session->user or !$this->validateToken()) return;
 
 	// Get the conversation.
 	if (!($conversation = $this->getConversation($conversationId))) return;
 
-	// Mute/unmute the conversation.
-	$muted = !$conversation["muted"];
-	ET::conversationModel()->setMuted($conversation, ET::$session->userId, $muted);
+	// Ignore/unignore the conversation.
+	$ignored = !$conversation["ignored"];
+	ET::conversationModel()->setIgnored($conversation, ET::$session->userId, $ignored);
 
-	$this->json("muted", $muted);
+	$this->json("ignored", $ignored);
 
 	// Redirect back to the conversation.
 	if ($this->responseType === RESPONSE_TYPE_DEFAULT) {
@@ -982,7 +1024,7 @@ public function mute($conversationId = false)
  * @param int $conversationId The ID of the conversation.
  * @return void
  */
-public function read($conversationId = false)
+public function action_read($conversationId = false)
 {
 	if (!ET::$session->user or !$this->validateToken()) return;
 
@@ -997,7 +1039,8 @@ public function read($conversationId = false)
 	// Redirect back to the last place we were at.
 	if ($this->responseType === RESPONSE_TYPE_DEFAULT) {
 		$nav = ET::$session->getNavigation("conversation/".$conversation["conversationId"]);
-		redirect(URL(R("return", $nav["url"])));
+		$return = R("return");
+		redirect($return ? URL($return) : $nav["url"]);
 	}
 
 	$this->render();
@@ -1010,7 +1053,7 @@ public function read($conversationId = false)
  * @param int $conversationId The ID of the conversation.
  * @return void
  */
-public function reply($conversationId = false)
+public function action_reply($conversationId = false)
 {
 	if (!ET::$session->user or !$this->validateToken()) return;
 
@@ -1026,17 +1069,11 @@ public function reply($conversationId = false)
 	// Set up a form to handle the input.
 	$form = ETFactory::make("form");
 
-	// Save or discard a draft.
-	if ($form->validPostBack("saveDraft") or $form->validPostBack("discardDraft")) {
+	// Save a draft.
+	if ($form->validPostBack("saveDraft")) {
 
-		$content = $form->isPostBack("saveDraft") ? $form->getValue("content") : null;
+		$content = $form->getValue("content");
 		ET::conversationModel()->setDraft($conversation, ET::$session->userId, $content);
-
-		// If there are no other posts in the conversation, delete the conversation.
-		if ($form->isPostBack("discardDraft") and !$conversation["countPosts"]) {
-			$this->delete($conversation["conversationId"]);
-			return;
-		}
 
 		// For an AJAX request, add the conversation labels to the output.
 		if ($this->responseType === RESPONSE_TYPE_AJAX) {
@@ -1100,7 +1137,7 @@ public function reply($conversationId = false)
  *
  * @return void
  */
-public function preview()
+public function action_preview()
 {
 	$this->responseType = RESPONSE_TYPE_JSON;
 	$this->json("content", $this->displayPost(R("content")));
@@ -1114,7 +1151,7 @@ public function preview()
  * @param int $postId The post ID.
  * @return void
  */
-public function editPost($postId = false)
+public function action_editPost($postId = false)
 {
 	if (!($post = $this->getPostForEditing($postId))) return;
 
@@ -1164,7 +1201,7 @@ public function editPost($postId = false)
  * @param int $postId The post ID.
  * @return void
  */
-public function deletePost($postId = false)
+public function action_deletePost($postId = false)
 {
 	if (!($post = $this->getPostForEditing($postId)) or !$this->validateToken()) return;
 
@@ -1190,7 +1227,7 @@ public function deletePost($postId = false)
  * @param int $postId The post ID.
  * @return void
  */
-public function restorePost($postId = false)
+public function action_restorePost($postId = false)
 {
 	if (!($post = $this->getPostForEditing($postId)) or !$this->validateToken()) return;
 
@@ -1231,6 +1268,7 @@ protected function formatPostForTemplate($post, $conversation)
 		"info" => array(),
 		"controls" => array(),
 		"body" => !$post["deleteMemberId"] ? $this->displayPost($post["content"]) : false,
+		"footer" => array(),
 
 		"data" => array(
 			"id" => $post["postId"],
@@ -1238,20 +1276,10 @@ protected function formatPostForTemplate($post, $conversation)
 		)
 	);
 
-	// If the post was within the last 24 hours, show a relative time (eg. 2 hours ago.)
-	if (time() - $post["time"] < 24 * 60 * 60)
-		$date = relativeTime($post["time"], true);
-
-	// If the post was within the last half a year, show just a month and a day.
-	elseif (time() - $post["time"] < 180 * 24 * 60 * 60)
-		$date = date("M j", $post["time"]);
-
-	// Otherwise, show the month, day, and year.
-	else
-		$date = date("M Y", $post["time"]);
+	$date = smartTime($post["time"], true);
 
 	// Add the date/time to the post info as a permalink.
-	$formatted["info"][] = "<a href='".URL(postURL($post["postId"]))."' class='time' title='".date(T("date.full"), $post["time"])."'>".(!empty($conversation["searching"]) ? T("Context") : $date)."</a>";
+	$formatted["info"][] = "<a href='".URL(postURL($post["postId"]))."' class='time' title='".strftime(T("date.full"), $post["time"])."'>".(!empty($conversation["searching"]) ? T("Show in context") : $date)."</a>";
 
 	// If the post isn't deleted, add a lot of stuff!
 	if (!$post["deleteMemberId"]) {
@@ -1271,7 +1299,7 @@ protected function formatPostForTemplate($post, $conversation)
 		}
 
 		// If the post has been edited, show the time and by whom next to the controls.
-		if ($post["editMemberId"]) $formatted["controls"][] = "<span class='editedBy'>".sprintf(T("Edited %s by %s"), "<span title='".date(T("date.full"), $post["editTime"])."'>".relativeTime($post["editTime"], true)."</span>", $post["editMemberName"])."</span>";
+		if ($post["editMemberId"]) $formatted["controls"][] = "<span class='editedBy'>".sprintf(T("Edited %s by %s"), "<span title='".strftime(T("date.full"), $post["editTime"])."'>".relativeTime($post["editTime"], true)."</span>", name($post["editMemberName"]))."</span>";
 
 		// If the user can reply, add a quote control.
 		if ($conversation["canReply"])
@@ -1289,7 +1317,7 @@ protected function formatPostForTemplate($post, $conversation)
 	else {
 
 		// Add the "deleted by" information.
-		if ($post["deleteMemberId"]) $formatted["controls"][] = "<span>".sprintf(T("Deleted %s by %s"), "<span title='".date(T("date.full"), $post["deleteTime"])."'>".relativeTime($post["deleteTime"], true)."</span>", $post["deleteMemberName"])."</span>";
+		if ($post["deleteMemberId"]) $formatted["controls"][] = "<span>".sprintf(T("Deleted %s by %s"), "<span title='".strftime(T("date.full"), $post["deleteTime"])."'>".relativeTime($post["deleteTime"], true)."</span>", name($post["deleteMemberName"]))."</span>";
 
 		// If the user can edit the post, add a restore control.
 		if ($canEdit)
@@ -1376,7 +1404,7 @@ protected function getPostForQuoting($postId, $conversationId)
  * @param bool $post Whether or not $id is the conversationId or a postId.
  * @return bool|array An array of the conversation details, or false if it wasn't found.
  */
-protected function getConversation($id, $post = false)
+public function getConversation($id, $post = false)
 {
 	$conversation = !$post ? ET::conversationModel()->getById($id) : ET::conversationModel()->getByPostId($id);
 
@@ -1407,7 +1435,14 @@ protected function getPostForEditing($postId)
 
 	// Stop here with an error if the user isn't allowed to edit this post.
 	if (!ET::postModel()->canEditPost($post, $conversation)) {
-		$this->renderMessage(T("Error"), T("message.noPermission"));
+
+		// If users only have permission to edit their posts until someone replies, and someone has replied since...
+		if (C("esoTalk.conversation.editPostTimeLimit") === "reply" and ($conversation["lastPostTime"] > $post["time"] or $conversation["lastPostMemberId"] != $post["memberId"])) $msg = T("message.cannotEditSinceReply");
+
+		// Otherwise, show a generic "no permission" message.
+		else $msg = T("message.noPermission");
+
+		$this->renderMessage(T("Error"), $msg);
 		return false;
 	}
 

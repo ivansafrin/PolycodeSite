@@ -47,7 +47,7 @@ protected $primaryKey;
 public function __construct($table = "", $primaryKey = "")
 {
 	$this->table = $table;
-	$this->primaryKey = $table."Id";
+	$this->primaryKey = $primaryKey ? $primaryKey : $table."Id";
 }
 
 
@@ -165,12 +165,10 @@ public function getWithSQL($sql)
  */
 public function get($wheres = array())
 {
-	return ET::SQL()
-		->select("*")
-		->from($this->table)
-		->where($wheres)
-		->exec()
-		->allRows();
+	$sql = ET::SQL();
+	$sql->where($wheres);
+
+	return $this->getWithSQL($sql);
 }
 
 
@@ -219,8 +217,7 @@ public function errorCount()
  */
 public function error($field, $code = null)
 {
-	if ($code !== null) $field = array($field => $code);
-	$this->errors = array_merge($this->errors, (array)$field);
+	$this->errors = array_merge($this->errors, array($field => $code ?: $field));
 }
 
 

@@ -18,7 +18,7 @@ class ETAppearanceAdminController extends ETAdminController {
  *
  * @return void
  */
-public function index()
+public function action_index()
 {
 	$skins = $this->getSkins();
 
@@ -73,7 +73,7 @@ protected function getSkins()
  * @param string $skin The name of the skin.
  * @return void
  */
-public function activate($skin = "")
+public function action_activate($skin = "")
 {
 	if (!$this->validateToken()) return;
 
@@ -83,6 +83,10 @@ public function activate($skin = "")
 
 	// Write the new setting to the config file.
 	ET::writeConfig(array("esoTalk.skin" => $skin));
+
+	// Clear skin cache.
+	$files = glob(PATH_CACHE.'/css/*.*');
+	foreach ($files as $file) unlink(realpath($file));
 
 	$this->redirect(URL("admin/appearance"));
 }
@@ -94,7 +98,7 @@ public function activate($skin = "")
  * @param string $skin The name of the skin.
  * @return void
  */
-public function activateMobile($skin = "")
+public function action_activateMobile($skin = "")
 {
 	if (!$this->validateToken()) return;
 
@@ -104,6 +108,10 @@ public function activateMobile($skin = "")
 
 	// Write the new setting to the config file.
 	ET::writeConfig(array("esoTalk.mobileSkin" => $skin));
+
+	// Clear skin cache.
+	$files = glob(PATH_CACHE.'/css/*.*');
+	foreach ($files as $file) unlink(realpath($file));
 
 	$this->redirect(URL("admin/appearance"));
 }
@@ -115,7 +123,7 @@ public function activateMobile($skin = "")
  * @param string $skin The name of the skin.
  * @return void
  */
-public function uninstall($skin = "")
+public function action_uninstall($skin = "")
 {
 	if (!$this->validateToken()) return;
 

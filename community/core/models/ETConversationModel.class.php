@@ -178,13 +178,15 @@ public function get($wheres = array())
 	if (!ET::$session->isAdmin()) {
 		$sql->select("BIT_OR(p.reply)", "canReply")
 			->select("BIT_OR(p.moderate)", "canModerate")
+			->select("BIT_OR(p.moderate)", "canDeleteConversation")
 			->from("channel_group p", "c.channelId=p.channelId AND p.groupId IN (:groupIds)", "left")
 			->bind(":groupIds", ET::$session->getGroupIds());
 	}
 	// If the user is an administrator, they can always reply and moderate.
 	else {
 		$sql->select("1", "canReply")
-			->select("1", "canModerate");
+			->select("1", "canModerate")
+			->select("1", "canDeleteConversation");
 	}
 
 	// Execute the query.
@@ -202,6 +204,18 @@ public function get($wheres = array())
 
 	// If the conversation is locked and the user can't moderate, then they can't reply.
 	if ($conversation["locked"] and !$conversation["canModerate"]) $conversation["canReply"] = false;
+
+	// If the current user owns this conversation, and it's a draft, or they're the only poster,
+	// then allow them to delete it. We can only know that they're the only poster if there is only
+	// one post in the conversation, or if there are two and the last one is theirs. In an ideal world,
+	// we would check all of the post authors, but it's probably not worth the performance hit here.
+	if ($conversation["startMemberId"] == ET::$session->userId 
+		and ($conversation["countPosts"] <= 1
+			or ($conversation["countPosts"] == 2 and $conversation["lastPostMemberId"] == ET::$session->userId)))
+	{
+		$conversation["canDeleteConversation"] = true;
+	}
+		
 
 	return $conversation;
 }
@@ -257,7 +271,7 @@ public function getEmptyConversation()
 		"draft" => "",
 		"private" => false,
 		"starred" => false,
-		"muted" => false,
+		"ingored" => false,
 		"locked" => false,
 		"channelId" => ET::$session->get("channelId"),
 		"channelTitle" => "",
@@ -651,8 +665,8 @@ public function create($data, $membersAllowed = array(), $isDraft = false)
 			->exec();
 	}
 
-	// If the user has the "star on reply" preference checked, star the conversation.
-	if (ET::$session->preference("starOnReply"))
+	// If the user has the "star on reply" or "star private" preferences checked, star the conversation.
+	if (ET::$session->preference("starOnReply") or ($conversation["private"] and ET::$session->preference("starPrivate")))
 		$this->setStatus($conversation["conversationId"], ET::$session->userId, array("starred" => true));
 
 	$this->trigger("createAfter", array($conversation, $postId, $content));
@@ -735,8 +749,10 @@ public function addReply(&$conversation, $content)
 		ET::activityModel()->create("post", $member, ET::$session->user, $data, $emailData);
 	}
 
-	// Update the conversation post count.
+	// Update the conversation details.
 	$conversation["countPosts"]++;
+	$conversation["lastPostTime"] = $time;
+	$conversation["lastPostMemberId"] = ET::$session->userId;
 
 	// If this is the first reply (ie. the conversation was a draft and now it isn't), send notifications to
 	// members who are in the membersAllowed list.
@@ -769,7 +785,9 @@ public function delete($wheres = array())
 	$result = ET::SQL()->select("conversationId")->from("conversation c")->where($wheres)->exec();
 	while ($row = $result->nextRow()) $ids[] = $row["conversationId"];
 
-	// Decrease channel and member conversation counts for these conversations.
+	if (empty($ids)) return true;
+
+	// Decrease channel and member conversation/post counts for these conversations.
 	// There might be a more efficient way to do this than one query per conversation... but good enough for now!
 	foreach ($ids as $id) {
 		ET::SQL()
@@ -781,22 +799,42 @@ public function delete($wheres = array())
 		ET::SQL()
 			->update("channel")
 			->set("countConversations", "GREATEST(0, CAST(countConversations AS SIGNED) - 1)", false)
+			->set("countPosts", "GREATEST(0, CAST(countPosts AS SIGNED) - (".ET::SQL()->select("countPosts")->from("conversation")->where("conversationId", $id)->get()."))", false)
 			->where("channelId = (".ET::SQL()->select("channelId")->from("conversation")->where("conversationId", $id)->get().")")
 			->exec();
-	}
 
-	// Really, we should decrease post counts as well, but I'll leave that for now.
+		// Find all the members who posted in the conversation, and how many times they posted.
+		$result = ET::SQL()
+			->select("memberId")
+			->select("COUNT(memberId)", "count")
+			->from("post")
+			->where("conversationId", $id)
+			->groupBy("memberId")
+			->exec();
+
+		// Loop through each member and decrease its post count.
+		while ($row = $result->nextRow()) {
+			ET::SQL()
+				->update("member")
+				->set("countPosts", "GREATEST(0, CAST(countPosts AS SIGNED) - ".$row["count"].")", false)
+				->where("memberId", $row["memberId"])
+				->exec();
+		}
+	}
 	
 	// Delete the conversation, posts, member_conversation, and activity rows.
-	ET::SQL()
+	$sql = ET::SQL()
 		->delete("c, m, p")
 		->from("conversation c")
 		->from("member_conversation m", "m.conversationId=c.conversationId", "left")
 		->from("post p", "p.conversationId=c.conversationId", "left")
 		->from("activity a", "a.conversationId=c.conversationId", "left")
 		->where("c.conversationId IN (:conversationIds)")
-		->bind(":conversationIds", $ids)
-		->exec();
+		->bind(":conversationIds", $ids);
+
+	$this->trigger("deleteBefore", array($sql, $ids));
+
+	$sql->exec();
 
 	return true;
 }
@@ -816,7 +854,7 @@ public function deleteById($id)
 
 /**
  * Set a member's status entry for a conversation (their record in the member_conversation table.)
- * This should not be used directly for setting a draft or 'muted'. setDraft and setMuted should be
+ * This should not be used directly for setting a draft or 'ignored'. setDraft and setIgnored should be
  * used for that.
  *
  * @param array|int $conversationIds The conversation ID(s) to set the member(s) status for.
@@ -864,8 +902,8 @@ public function setDraft(&$conversation, $memberId, $draft = null)
 
 	if ($this->errorCount()) return false;
 
-	// Save the draft.
-	$this->setStatus($conversation["conversationId"], $memberId, array("draft" => $draft));
+	// Save the draft to the database if the conversation exists.
+	if ($conversation["conversationId"]) $this->setStatus($conversation["conversationId"], $memberId, array("draft" => $draft));
 
 	// Add or remove the draft label.
 	$this->addOrRemoveLabel($conversation, "draft", $draft !== null);
@@ -939,22 +977,22 @@ public function markAsRead($conversationIds, $memberId)
 
 
 /**
- * Set a member's muted flag for a conversation.
+ * Set a member's ignored flag for a conversation.
  *
- * @param array $conversation The conversation to set the draft on. The conversation array's labels
- * 		and muted attribute will be updated.
+ * @param array $conversation The conversation to set the flag on. The conversation array's labels
+ * 		and ignored attribute will be updated.
  * @param int $memberId The member to set the flag for.
- * @param bool $muted Whether or not to set the conversation to muted.
+ * @param bool $ignored Whether or not to set the conversation to ignored.
  * @return void
  */
-public function setMuted(&$conversation, $memberId, $muted)
+public function setIgnored(&$conversation, $memberId, $ignored)
 {
-	$muted = (bool)$muted;
+	$ignored = (bool)$ignored;
 
-	$this->setStatus($conversation["conversationId"], $memberId, array("muted" => $muted));
+	$this->setStatus($conversation["conversationId"], $memberId, array("ignored" => $ignored));
 
-	$this->addOrRemoveLabel($conversation, "muted", $muted);
-	$conversation["muted"] = $muted;
+	$this->addOrRemoveLabel($conversation, "ignored", $ignored);
+	$conversation["ignored"] = $ignored;
 }
 
 
@@ -1008,7 +1046,7 @@ public function setLocked(&$conversation, $locked)
  * @param bool $add true to add the label, false to remove it.
  * @return void
  */
-protected function addOrRemoveLabel(&$conversation, $label, $add = true)
+public function addOrRemoveLabel(&$conversation, $label, $add = true)
 {
 	if ($add and !in_array($label, $conversation["labels"]))
 		$conversation["labels"][] = $label;
@@ -1051,7 +1089,7 @@ public function setTitle(&$conversation, $title)
  */
 public function validateTitle($title)
 {
-	if (!strlen($title)) return "emptyTitle";
+	if (!strlen(trim($title))) return "emptyTitle";
 }
 
 
@@ -1307,7 +1345,7 @@ protected function privateAddNotification($conversation, $memberIds, $notifyAll 
 
 // Add default labels.
 ETConversationModel::addLabel("sticky", "IF(c.sticky=1,1,0)", "icon-pushpin");
-ETConversationModel::addLabel("private", "IF(c.private=1,1,0)", "icon-envelope");
+ETConversationModel::addLabel("private", "IF(c.private=1,1,0)", "icon-envelope-alt");
 ETConversationModel::addLabel("locked", "IF(c.locked=1,1,0)", "icon-lock");
 ETConversationModel::addLabel("draft", "IF(s.draft IS NOT NULL,1,0)", "icon-pencil");
-ETConversationModel::addLabel("muted", "IF(s.muted=1,1,0)", "icon-eye-close");
+ETConversationModel::addLabel("ignored", "IF(s.ignored=1,1,0)", "icon-eye-close");

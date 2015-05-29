@@ -17,23 +17,25 @@ $className = "channel-".$conversation["channelId"];
 if ($conversation["starred"]) $className .= " starred";
 if ($conversation["unread"] and ET::$session->user) $className .= " unread";
 if ($conversation["startMemberId"] == ET::$session->user) $className .= " mine";
+foreach ($conversation["labels"] as $label) $className .= " label-$label";
 
 ?>
 <li id='c<?php echo $conversation["conversationId"]; ?>' class='<?php echo $className; ?>'>
 <?php if (ET::$session->user): ?>
-<div class='col-star'><?php echo star($conversation["conversationId"], $conversation["starred"]); ?></div>
+<div class='col-star'><?php
+echo star($conversation["conversationId"], $conversation["starred"]);
+
+// Output an "unread indicator", allowing the user to mark the conversation as read.
+if (ET::$session->user and $conversation["unread"])
+	echo " <a href='".URL("conversation/markAsRead/".$conversation["conversationId"]."?token=".ET::$session->token."&return=".urlencode(ET::$controller->selfURL))."' class='unreadIndicator' title='".T("Mark as read")."'><i class='icon-ok'></i></a> ";
+?></div>
 <?php endif; ?>
 <div class='col-conversation'><?php
 $conversationURL = conversationURL($conversation["conversationId"], $conversation["title"]);
 
 // Output the conversation's labels.
 echo "<span class='labels'>";
-foreach ($conversation["labels"] as $label) {
-	if ($label == "draft")
-		echo "<a href='".URL($conversationURL."#reply")."' class='label label-$label' title='".T("label.$label")."'><i class='".ETConversationModel::$labels[$label][1]."'></i></a> ";
-	else
-		echo "<span class='label label-$label' title='".T("label.$label")."'><i class='".ETConversationModel::$labels[$label][1]."'></i></span> ";
-}
+foreach ($conversation["labels"] as $label) echo label($label, $label == "draft" ? URL($conversationURL."#reply") : "");
 echo "</span> ";
 
 // Output the conversation title, highlighting search keywords.
@@ -52,18 +54,10 @@ if ($conversation["sticky"])
 $channel = $data["channelInfo"][$conversation["channelId"]];
 echo "<a href='".URL(searchURL("", $channel["slug"]))."' class='channel channel-{$conversation["channelId"]}' data-channel='{$channel["slug"]}'>{$channel["title"]}</a>";
 ?></div>
-<div class='col-replies'>
-<i class='icon-comment<?php if (!$conversation["replies"]) echo "-alt"; ?>'></i>
-<?php echo "<span>".Ts("%s reply", "%s replies", $conversation["replies"])."</span>";
-
-// Output an "unread indicator", showing the number of unread posts.
-if (ET::$session->user and $conversation["unread"])
-	echo " <a href='".URL("conversation/markAsRead/".$conversation["conversationId"]."?token=".ET::$session->token."&return=".urlencode(ET::$controller->selfURL))."' class='unreadIndicator' title='".T("Mark as read")."'>".Ts("%s new", "%s new", $conversation["unread"])."</a> ";
-
-?></div>
 <div class='col-lastPost'><?php
 echo "<span class='action'>".avatar(array(
 		"memberId" => $conversation["lastPostMemberId"],
+		"username" => $conversation["lastPostMember"],
 		"avatarFormat" => $conversation["lastPostMemberAvatarFormat"],
 		"email" => $conversation["lastPostMemberEmail"]
 	), "thumb"), " ",
@@ -71,5 +65,8 @@ echo "<span class='action'>".avatar(array(
 		"<span class='lastPostMember name'>".memberLink($conversation["lastPostMemberId"], $conversation["lastPostMember"])."</span>",
 		"<a href='".URL($conversationURL."/unread")."' class='lastPostTime'>".relativeTime($conversation["lastPostTime"], true)."</a>"),
 	"</span>";
+?></div>
+<div class='col-replies'><?php
+echo "<span><a href='".URL($conversationURL."/unread")."'>".$conversation["replies"]."</a></span>";
 ?></div>
 </li>

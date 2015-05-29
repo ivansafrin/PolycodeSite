@@ -31,79 +31,33 @@ $classes = array("channel-".$conversation["channelId"]);
 if ($conversation["starred"]) $classes[] = "starred";
 if ($conversation["startMemberId"] == ET::$session->userId) $classes[] = "mine";
 ?>
-<div id='conversation' class='<?php echo implode(" ", $classes); ?>'>
+<div id='conversation' class='hasScrubber <?php echo implode(" ", $classes); ?>'>
 
-<!-- Conversation header -->
-<div id='conversationHeader' class='bodyHeader'>
+<div class='scrubberColumn'>
+<div class='scrubberContent'>
 
-<?php
-
-// Title ?>
-<h1 id='conversationTitle'><?php
-if ($conversation["canModerate"] or $conversation["startMemberId"] == ET::$session->userId): ?><a href='<?php echo URL("conversation/edit/".$conversation["conversationId"]); ?>'><?php echo sanitizeHTML($conversation["title"]); ?></a><?php
-else: echo sanitizeHTML($conversation["title"]);
-endif;
-?></h1>
-<?php
-
-// Channel
-$this->renderView("conversation/channelPath", array("conversation" => $conversation));
-
-// Labels ?>
-<span class='labels'>
-<?php $this->renderView("conversation/labels", array("labels" => $conversation["labels"])); ?>
-</span>
+<?php $this->trigger("renderControlsBefore", array($data)); ?>
 
 <?php
 // Search within conversation form ?>
 <form class='search' id='searchWithinConversation' action='<?php echo URL(conversationURL($conversation["conversationId"], $conversation["title"])); ?>' method='get'>
 <fieldset>
-<input name='search' type='text' class='text' value='<?php echo sanitizeHTML($data["searchString"]); ?>' placeholder='<?php echo T("Search within this conversation..."); ?>'/>
-<?php if ($data["searchString"]): ?><a href='<?php echo URL(conversationURL($conversation["conversationId"], $conversation["title"])); ?>' class='control-reset'>x</a><?php endif; ?>
+<i class='icon-search'></i>
+<input name='search' type='text' class='text' value='<?php echo sanitizeHTML($data["searchString"]); ?>' placeholder='<?php echo T("Search"); ?>'/>
+<?php if ($data["searchString"]): ?><a href='<?php echo URL(conversationURL($conversation["conversationId"], $conversation["title"])); ?>' class='control-reset'><i class='icon-remove'></i></a><?php endif; ?>
 </fieldset>
 </form>
-
-</div>
-
-<?php
-// Controls
-if ($data["controlsMenu"]->count()): ?>
-<ul id='conversationControls' class='controls'>
-<?php echo $data["controlsMenu"]->getContents(); ?>
-</ul>
-<?php endif; ?>
-
-<?php
-// Members allowed list (only if conversation is private or editable)
-if (count($conversation["membersAllowedSummary"]) or $conversation["startMemberId"] == ET::$session->userId or $conversation["canModerate"]): ?>
-<div id='conversationPrivacy' class='area'>
-<span class='allowedList action'><?php $this->renderView("conversation/membersAllowedSummary", $data); ?></span>
-<?php if ($conversation["startMemberId"] == ET::$session->userId): ?><a href='<?php echo URL("conversation/edit/".$conversation["conversationId"]); ?>' id='control-changeMembersAllowed'><?php echo T("Change"); ?></a><?php endif; ?>
-</div>
-<?php endif; ?>
-
-<div id='conversationBody' class='hasScrubber'>
-
-<?php // If we're searching but there are no search results, show an error.
-if ($data["searchString"] and !$conversation["countPosts"]): ?>
-<div class='area noResults help'>
-<h4><?php echo T("message.noSearchResultsPosts"); ?></h4>
-<ul>
-<li><?php echo T("message.fulltextKeywordWarning"); ?></li>
-<li><?php echo T("message.searchAllConversations"); ?></li>
-</ul>
-</div>
-<?php else: ?>
-
-<div class='scrubberColumn'>
-<div class='scrubberContent'>
 
 <?php
 // Star
 echo starButton($conversation["conversationId"], $conversation["starred"])."\n";
 ?>
 
-<a href='#reply' class='button big<?php if (!$conversation["canReply"] and ET::$session->user): ?> disabled<?php endif; ?>' id='jumpToReply'><i class='icon-plus-sign'></i> <?php echo T("Post a Reply"); ?></a>
+<?php if (!ET::$session->user): ?>
+<a href='<?php echo URL("user/login?return=".urlencode($this->selfURL)."/#reply"); ?>' class='button big'><i class="icon-plus"></i> <?php echo T("Post a Reply"); ?></a>
+<?php else: ?>
+<a href='#reply' class='button big' id='jumpToReply'><i class='icon-plus'></i> <?php echo T("Post a Reply"); ?></a>
+<?php endif; ?>
 
 <?php $this->trigger("renderScrubberBefore", array($data)); ?>
 
@@ -122,7 +76,7 @@ $oldestYear = date("Y", $conversation["startTime"]);
 $oldestMonth = date("n", $conversation["startTime"]);
 
 // Output the "original post" item. ?>
-<li class='scrubber-op<?php if ($data["startFrom"] == 0 and empty($data["year"])): ?> selected<?php endif; ?>' data-index='first'><a href='<?php echo URL(makeURL()); ?>'><?php echo T("Original Post"); ?></a></li>
+<li class='scrubber-op scrubber-nav' data-index='first'><a href='<?php echo URL(makeURL()); ?>'><i class='icon-arrow-up'></i> <?php echo T("Original Post"); ?></a></li>
 <?php
 
 // Work out the year/month which we are viewing from and should therefore highlight as "selected".
@@ -189,13 +143,66 @@ foreach ($recentMonths as $month) {
 	echo "</li>";
 }
 
-// If the latest post was in today's month, output a "Now" item. ?>
-<li class='scrubber-now' data-index='last'<?php if ($latestYear != $currentYear or $latestMonth != $currentMonth): ?> style='display:none'<?php endif; ?>><a href='<?php echo URL(makeURL("last")); ?>'><?php echo T("Now"); ?></a></li>
+// Always output a "Latest" item. ?>
+<li class='scrubber-now scrubber-nav' data-index='last'><a href='<?php echo URL(makeURL("last")); ?>'><i class='icon-arrow-down'></i> <?php echo T("Latest"); ?></a></li>
 </ul>
 <?php endif; ?>
 
 </div>
 </div>
+
+<!-- Conversation header -->
+<div id='conversationHeader' class='bodyHeader'>
+
+<?php
+
+// Title ?>
+<h1 id='conversationTitle'><?php
+if ($conversation["canModerate"] or $conversation["startMemberId"] == ET::$session->userId): ?><a href='<?php echo URL("conversation/edit/".$conversation["conversationId"]); ?>'><?php echo sanitizeHTML($conversation["title"]); ?></a><?php
+else: echo sanitizeHTML($conversation["title"]);
+endif;
+?></h1>
+<?php
+
+// Channel
+$this->renderView("conversation/channelPath", array("conversation" => $conversation));
+
+// Labels ?>
+<span class='labels'>
+<?php $this->renderView("conversation/labels", array("labels" => $conversation["labels"])); ?>
+</span>
+
+</div>
+
+<?php
+// Controls
+if ($data["controlsMenu"]->count()): ?>
+<ul id='conversationControls' class='controls'>
+<?php echo $data["controlsMenu"]->getContents(); ?>
+</ul>
+<?php endif; ?>
+
+<?php
+// Members allowed list (only if conversation is private or editable)
+if (count($conversation["membersAllowedSummary"]) or $conversation["startMemberId"] == ET::$session->userId or $conversation["canModerate"]): ?>
+<div id='conversationPrivacy' class='area'>
+<span class='allowedList action'><?php $this->renderView("conversation/membersAllowedSummary", $data); ?></span>
+<?php if ($conversation["startMemberId"] == ET::$session->userId): ?><a href='<?php echo URL("conversation/edit/".$conversation["conversationId"]); ?>' id='control-changeMembersAllowed'><i class='icon-pencil'></i> <?php echo T("Change"); ?></a><?php endif; ?>
+</div>
+<?php endif; ?>
+
+<div id='conversationBody'>
+
+<?php // If we're searching but there are no search results, show an error.
+if ($data["searchString"] and !$conversation["countPosts"]): ?>
+<div class='area noResults help'>
+<h4><?php echo T("message.noSearchResultsPosts"); ?></h4>
+<ul>
+<li><?php echo T("message.fulltextKeywordWarning"); ?></li>
+<li><?php echo T("message.searchAllConversations"); ?></li>
+</ul>
+</div>
+<?php else: ?>
 
 <!-- Posts -->
 <ol id='conversationPosts' class='postList' start='<?php echo $data["startFrom"] + 1; ?>'>

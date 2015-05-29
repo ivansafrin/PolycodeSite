@@ -31,9 +31,23 @@ $form = $data["form"];
 <div class='section'>
 
 <ul class='form'>
-<li><label><?php echo T("Username or Email"); ?></label> <?php echo $form->input("username"); ?></li>
-<li><label><?php echo T("Password"); ?> <small><a href='<?php echo URL("user/forgot"); ?>' class='link-forgot' tabindex='-1'><?php echo T("Forgot?"); ?></a></small></label> <?php echo $form->input("password", "password"); ?></li>
-<li><div class='checkboxGroup'><label class='checkbox'><?php echo $form->checkbox("remember"); ?> <?php echo T("Keep me logged in"); ?></label></div></li>
+
+<?php
+// Loop through the form sections (eg. "avatar", "notifications").
+foreach ($form->getSections() as $k => $v): ?>
+
+<li><label><?php echo $v; ?></label> <div class='fieldGroup'>
+<?php
+// Loop through each of the fields in this section and output it.
+foreach ($form->getFieldsInSection($k) as $field): ?>
+
+<?php echo $field; ?>
+
+<?php endforeach; ?>
+</div></li>
+
+<?php endforeach; ?>
+
 </ul>
 
 </div>
@@ -43,7 +57,7 @@ $form = $data["form"];
 <div class='buttons'>
 <small><?php printf(T("Don't have an account? <a href='%s' class='link-join'>Sign up!</a>"), URL("user/join")); ?></small>
 <?php
-echo $form->button("login", T("Log In"), array("class" => "big"));
+echo $form->button("login", T("Log In"), array("class" => "big submit"));
 echo $form->cancelButton();
 ?>
 </div>

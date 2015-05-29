@@ -220,9 +220,9 @@ public function getActivity($member, $offset = 0, $limit = 11)
 	$posts = ET::SQL()
 		->select("NULL", "activityId")
 		->select($member["memberId"], "fromMemberId")
-		->select("NULL", "fromMemberName")
-		->select("'{$member["email"]}'", "email")
-		->select("'{$member["avatarFormat"]}'", "avatarFormat")
+		->select(ET::$database->escapeValue($member["username"]), "fromMemberName")
+		->select(ET::$database->escapeValue($member["email"]), "email")
+		->select(ET::$database->escapeValue($member["avatarFormat"]), "avatarFormat")
 		->select("'postActivity'", "type")
 		->select("NULL", "data")
 		->select("postId")
@@ -336,7 +336,7 @@ public function getNotifications($limit = 5)
 }
 
 
-public function markNotificationsAsRead($conversationId = false)
+public function markNotificationsAsRead($type = null, $conversationId = null)
 {
 	$query = ET::SQL()
 		->update("activity")
@@ -344,6 +344,11 @@ public function markNotificationsAsRead($conversationId = false)
 		->where("memberId=:memberId")
 		->where("`read`=0")
 		->bind(":memberId", ET::$session->userId);
+
+	if ($type) {
+		$query->where("type=:type")
+			->bind(":type", $type);
+	}
 
 	if ($conversationId) {
 		$query->where("conversationId=:conversationId")
@@ -380,7 +385,7 @@ public static function postActivity($item, $member)
 public static function postNotification(&$item)
 {
 	return array(
-		sprintf(T("%s posted in %s."), name($item["fromMemberName"]), "<i class='star icon-star'></i> <strong>".sanitizeHTML($item["data"]["title"])."</strong>"),
+		"<i class='star icon-star'></i> ".sprintf(T("%s posted in %s."), name($item["fromMemberName"]), "<strong>".sanitizeHTML($item["data"]["title"])."</strong>"),
 		URL(postURL($item["postId"]))
 	);
 }
@@ -410,7 +415,7 @@ public static function groupChangeNotification($item)
 {
 	$groups = memberGroup($item["data"]["account"], $item["data"]["groups"], true);
 	return array(
-		sprintf(T("%s changed your group to %s."), name($item["fromMemberName"]), "<strong>".$groups."</strong>"),
+		"<i class='icon-user'></i> ".sprintf(T("%s changed your group to %s."), name($item["fromMemberName"]), "<strong>".$groups."</strong>"),
 		URL(memberURL("me"))
 	);
 }
@@ -441,7 +446,7 @@ public static function groupChangeActivity($item, $member)
 public static function mentionNotification($item)
 {
 	return array(
-		sprintf(T("%s tagged you in a post."), "<strong>".name($item["fromMemberName"])."</strong>"),
+		sprintf("@ ".T("%s mentioned you in %s."), name($item["fromMemberName"]), "<strong>".sanitizeHTML($item["data"]["title"])."</strong>"),
 		URL(postURL($item["data"]["postId"]))
 	);
 }
@@ -459,7 +464,7 @@ public static function mentionEmail($item, $member)
 	$content = ET::formatter()->init($item["data"]["content"])->format()->get();
 	$url = URL(postURL($item["data"]["postId"]), true);
 	return array(
-		sprintf(T("email.mention.subject"), name($item["fromMemberName"], false)),
+		sprintf(T("email.mention.subject"), name($item["fromMemberName"], false), $item["data"]["title"]),
 		sprintf(T("email.mention.body"), name($item["fromMemberName"]), sanitizeHTML($item["data"]["title"]), $content, "<a href='$url'>$url</a>")
 	);
 }
@@ -475,7 +480,7 @@ public static function mentionEmail($item, $member)
 public static function privateAddNotification(&$item)
 {
 	return array(
-		sprintf(T("%s invited you to %s."), name($item["fromMemberName"]), "<span class='label label-private'>".T("label.private")."</span> <strong>".sanitizeHTML($item["data"]["title"])."</strong>"),
+		label("private")." ".sprintf(T("%s invited you to %s."), name($item["fromMemberName"]), "<strong>".sanitizeHTML($item["data"]["title"])."</strong>"),
 		URL(conversationURL($item["conversationId"]))
 	);
 }
@@ -491,7 +496,7 @@ public static function privateAddEmail($item, $member)
 	$content = ET::formatter()->init($item["data"]["content"])->format()->get();
 	$url = URL(conversationURL($item["data"]["conversationId"], $item["data"]["title"]), true);
 	return array(
-		T("email.privateAdd.subject"),
+		sprintf(T("email.privateAdd.subject"), $item["data"]["title"]),
 		sprintf(T("email.privateAdd.body"), sanitizeHTML($item["data"]["title"]), $content, "<a href='$url'>$url</a>")
 	);
 }
@@ -521,8 +526,22 @@ public static function postEmail($item, $member)
 public static function updateAvailableNotification($item)
 {
 	return array(
-		sprintf(T("A new version of esoTalk (%s) is available."), "<strong>".$item["data"]["version"]."</strong>"),
+		"<i class='icon-wrench'></i> ".sprintf(T("A new version of esoTalk (%s) is available."), "<strong>".$item["data"]["version"]."</strong>"),
 		!empty($item["data"]["releaseNotes"]) ? $item["data"]["releaseNotes"] : "http://esotalk.org/"
+	);
+}
+
+
+/**
+ * Returns a formatted notification item for the "unapproved" activity type.
+ *
+ * @see postNotification() for parameter and return information.
+ */
+public static function unapprovedNotification($item)
+{
+	return array(
+		"<i class='icon-user'></i> ".sprintf(T("%s has registered and is awaiting approval."), "<strong>".name($item["data"]["username"])."</strong>"),
+		URL("admin/unapproved")
 	);
 }
 
@@ -562,4 +581,9 @@ ETActivityModel::addType("privateAdd", array(
 // Notification for when an update to the esoTalk software is available.
 ETActivityModel::addType("updateAvailable", array(
 	"notification" => array("ETActivityModel", "updateAvailableNotification")
+));
+
+// Notification for when a new user signs up and needs approval.
+ETActivityModel::addType("unapproved", array(
+	"notification" => array("ETActivityModel", "unapprovedNotification")
 ));

@@ -38,8 +38,10 @@ public function renderProfile($view = "")
  * @param string $name The name of the member.
  * @return void
  */
-public function name($name = "")
+public function action_name($name = "")
 {
+	if (!$this->allowed()) return;
+
 	$result = ET::SQL()
 		->select("memberId, username")
 		->from("member")
@@ -61,9 +63,9 @@ public function name($name = "")
  * @param string $member The ID of the member.
  * @return void
  */
-public function index($member = "")
+public function action_index($member = "")
 {
-	$this->activity($member);
+	$this->action_activity($member);
 }
 
 
@@ -93,6 +95,8 @@ protected function getMember($memberId)
  */
 public function profile($member, $pane = "")
 {
+	if (!$this->allowed()) return;
+
 	// Translate "me" to the currently logged in user. Otherwise, use the member ID provided.
 	if ($member == "me") $memberId = ET::$session->userId;
 	else $memberId = (int)$member;
@@ -100,7 +104,7 @@ public function profile($member, $pane = "")
 	if (!($member = $this->getMember($memberId))) return false;
 
 	// Set the title and include relevant JavaScript.
-	$this->title = $member["username"];
+	$this->title = name($member["username"]);
 	$this->addJSFile("core/js/member.js");
 	$this->addJSVar("memberId", $member["memberId"]);
 	$this->addJSLanguage("Controls");
@@ -120,13 +124,6 @@ public function profile($member, $pane = "")
 	$model = ET::memberModel();
 	$controls = ETFactory::make("menu");
 
-	// Add the suspend/unsuspend control, and the "remove avatar" control.
-	if ($model->canSuspend($member)) {
-	 	$controls->add("suspend", "<a href='".URL("member/suspend/".$member["memberId"])."' id='suspendLink'><i class='icon-shield'></i>".T($member["account"] == ACCOUNT_SUSPENDED ? "Unsuspend member" : "Suspend member")."</a>");
-	 	if ($member["avatarFormat"]) $controls->add("removeAvatar", "<a href='".URL("member/removeAvatar/".$member["memberId"]."?token=".ET::$session->token)."' id='removeAvatarLink'>".T("Remove avatar")."</a>");
-	 	$controls->separator();
-	}
-
 	// Add the change permissions control (provided the member is not suspended.)
 	if ($member["account"] != ACCOUNT_SUSPENDED and $model->canChangePermissions($member))
 	 	$controls->add("permissions", "<a href='".URL("member/permissions/".$member["memberId"])."' id='editPermissionsLink'><i class='icon-lock'></i>".T("Change permissions")."</a>");
@@ -135,18 +132,23 @@ public function profile($member, $pane = "")
 	if ($model->canRename($member))
 	 	$controls->add("rename", "<a href='".URL("member/rename/".$member["memberId"])."' id='renameLink'><i class='icon-pencil'></i>".T("Change username")."</a>");
 
-	// Add the delete control.
-	if ($model->canDelete($member)) {
-		$controls->separator();
-	 	$controls->add("delete", "<a href='".URL("member/delete/".$member["memberId"])."' id='deleteLink'><i class='icon-remove'></i>".T("Delete member")."</a>");
+	// Add the suspend/unsuspend control, and the "remove avatar" control.
+	if ($model->canSuspend($member)) {
+	 	if ($member["avatarFormat"]) $controls->add("removeAvatar", "<a href='".URL("member/removeAvatar/".$member["memberId"]."?token=".ET::$session->token)."' id='removeAvatarLink'><i class='icon-picture'></i>".T("Remove avatar")."</a>");
+	 	$controls->separator();
+	 	$controls->add("suspend", "<a href='".URL("member/suspend/".$member["memberId"])."' id='suspendLink'><i class='icon-shield'></i>".T($member["account"] == ACCOUNT_SUSPENDED ? "Unsuspend member" : "Suspend member")."</a>");
 	}
+
+	// Add the delete control.
+	if ($model->canDelete($member))
+	 	$controls->add("delete", "<a href='".URL("member/delete/".$member["memberId"])."' id='deleteLink'><i class='icon-remove'></i>".T("Delete member")."</a>");
 
 	// Set up the actions menu (things that can be done in relation to the member.)
 	$actions = ETFactory::make("menu");
 
 	// If this is the logged-in user's profile, show a link to their settings page.
 	if ($member["memberId"] == ET::$session->userId)
-		$actions->add("settings", "<a href='".URL("settings")."'>".T("Edit your profile")."</a>");
+		$actions->add("settings", "<a href='".URL("settings")."'><i class='icon-pencil'></i> ".T("Edit your profile")."</a>");
 
 	// Otherwise, show links to do with the user's private conversations with this member.
 	elseif (ET::$session->userId) {
@@ -173,7 +175,7 @@ public function profile($member, $pane = "")
  * @param int $page The activity page number.
  * @return void
  */
-public function activity($member = "", $page = "")
+public function action_activity($member = "", $page = "")
 {
 	// Set up the member profile page.
 	if (!($member = $this->profile($member, "activity"))) return;
@@ -206,7 +208,7 @@ public function activity($member = "", $page = "")
  * @param int $activityId The ID of the activity item.
  * @return void
  */
-public function deleteActivity($activityId = "")
+public function action_deleteActivity($activityId = "")
 {
 	if (!$this->validateToken()) return;
 
@@ -234,7 +236,7 @@ public function deleteActivity($activityId = "")
  * @param string $member The member ID.
  * @return void
  */
-public function statistics($member = "")
+public function action_statistics($member = "")
 {
 	// Set up the member profile page.
 	if (!($member = $this->profile($member, "statistics"))) return;
@@ -267,7 +269,7 @@ public function statistics($member = "")
  * @param int $memberId The member's ID.
  * @return void
  */
-public function permissions($memberId = "")
+public function action_permissions($memberId = "")
 {
 	if (!($member = $this->getMember($memberId))) return;
 
@@ -328,7 +330,7 @@ public function permissions($memberId = "")
 		ET::memberModel()->setGroups($member, $currentAccount, $currentGroups);
 
 		// Show a message and redirect.
-		$this->message(T("message.changesSaved"), "success");
+		$this->message(T("message.changesSaved"), "success autoDismiss");
 		$this->redirect($redirectURL);
 	}
 
@@ -357,7 +359,7 @@ public function permissions($memberId = "")
  * @param int $memberId The member's ID.
  * @return void
  */
-public function removeAvatar($memberId = "")
+public function action_removeAvatar($memberId = "")
 {
 	if (!$this->validateToken()) return;
 
@@ -386,7 +388,7 @@ public function removeAvatar($memberId = "")
  * @param int $memberId The member's ID.
  * @return void
  */
-public function suspend($memberId = "")
+public function action_suspend($memberId = "")
 {
 	if (!($member = $this->getMember($memberId))) return;
 
@@ -406,14 +408,14 @@ public function suspend($memberId = "")
 	// Suspend the member?
 	if ($form->validPostBack("suspend") and $member["account"] != ACCOUNT_SUSPENDED) {
 		ET::memberModel()->setGroups($member, ACCOUNT_SUSPENDED);
-		$this->message(T("message.changesSaved"), "success");
+		$this->message(T("message.changesSaved"), "success autoDismiss");
 		$this->redirect($redirectURL);
 	}
 
 	// Or unsuspend the member?
 	elseif ($form->validPostBack("unsuspend") and $member["account"] == ACCOUNT_SUSPENDED) {
 		ET::memberModel()->setGroups($member, ACCOUNT_MEMBER);
-		$this->message(T("message.changesSaved"), "success");
+		$this->message(T("message.changesSaved"), "success autoDismiss");
 		$this->redirect($redirectURL);
 	}
 
@@ -430,7 +432,7 @@ public function suspend($memberId = "")
  * @param int $memberId The member's ID.
  * @return void
  */
-public function rename($memberId = "")
+public function action_rename($memberId = "")
 {
 	if (!($member = $this->getMember($memberId))) return;
 
@@ -457,7 +459,7 @@ public function rename($memberId = "")
 		// Check for errors - if there are none, show a message and redirect.
 		if ($model->errorCount()) $form->errors($model->errors());
 		else {
-			$this->message(T("message.changesSaved"), "success");
+			$this->message(T("message.changesSaved"), "success autoDismiss");
 			$this->redirect($redirectURL);
 		}
 	}
@@ -475,7 +477,7 @@ public function rename($memberId = "")
  * @param int $memberId The member's ID.
  * @return void
  */
-public function delete($memberId = "")
+public function action_delete($memberId = "")
 {
 	if (!($member = $this->getMember($memberId))) return;
 
@@ -495,7 +497,7 @@ public function delete($memberId = "")
 	// If the form was submitted, delete the member and take the appropriate action upon all their posts.
 	if ($form->validPostBack("delete")) {
 		ET::memberModel()->deleteById($member["memberId"], $form->getValue("deletePosts"));
-		$this->message(T("message.changesSaved"), "success");
+		$this->message(T("message.changesSaved"), "success autoDismiss");
 		$this->redirect(URL("members"));
 	}
 

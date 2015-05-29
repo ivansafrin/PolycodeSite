@@ -45,9 +45,9 @@ public function init()
  *
  * @return void
  */
-public function index()
+public function action_index()
 {
-	$this->warnings();
+	$this->action_warnings();
 }
 
 
@@ -56,7 +56,7 @@ public function index()
  *
  * @return void
  */
-public function errors()
+public function action_errors()
 {
 	$this->data("fatal", true);
 	$this->render("install/warnings");
@@ -68,7 +68,7 @@ public function errors()
  *
  * @return void
  */
-public function warnings()
+public function action_warnings()
 {
 	$errors = $this->warningChecks();
 	if (!$errors) $this->redirect(URL("install/info"));
@@ -83,7 +83,7 @@ public function warnings()
  *
  * @return void
  */
-public function info()
+public function action_info()
 {
 	// Set up the form.
 	$form = ETFactory::make("form");
@@ -97,7 +97,7 @@ public function info()
 	if ($values = ET::$session->get("install")) $form->setValues($values);
 
 	// Work out what the base URL is.
-	$dir = substr($_SERVER["PHP_SELF"], 0, strrpos($_SERVER["PHP_SELF"], "/"));
+	$dir = substr($_SERVER["PHP_SELF"], 0, strrpos($_SERVER["PHP_SELF"], "/index.php"));
 	$baseURL = "http://{$_SERVER["HTTP_HOST"]}{$dir}/";
 	$form->setValue("baseURL", $baseURL);
 
@@ -124,7 +124,7 @@ public function info()
 			ET::$database->init($values["mysqlHost"], $values["mysqlUser"], $values["mysqlPass"], $values["mysqlDB"]);
 			ET::$database->connection();
 		} catch (PDOException $e) {
-			$form->error("mysql", sprintf(T("message.connectionError"), $e->getMessage()));
+			$form->error("mysql", $e->getMessage());
 		}
 
 		// Check to see if there are any conflicting tables already in the database.
@@ -138,7 +138,7 @@ public function info()
 			while ($table = $result->result()) $theirTables[] = $table;
 
 			// Just do a check for the member table. If it exists with this prefix, we have a conflict.
-			if (in_array($values["tablePrefix"]."member", $theirTables)) {
+			if (in_array($values["tablePrefix"]."_member", $theirTables)) {
 
 				$form->error("tablePrefix", T("message.tablePrefixConflict"));
 
@@ -168,7 +168,7 @@ public function info()
  *
  * @return void
  */
-public function install()
+public function action_install()
 {
 	// If we aren't supposed to be here, get out.
 	if (!($info = ET::$session->get("install"))) $this->redirect(URL("install/info"));
@@ -229,7 +229,7 @@ RewriteRule ^(.*)$ index.php/$1 [QSA,L]
 	// Write a robots.txt file.
 	file_put_contents(PATH_ROOT."/robots.txt", "User-agent: *
 Crawl-delay: 10
-Disallow: /search/
+Disallow: /conversations/*?search=*
 Disallow: /members/
 Disallow: /user/
 Disallow: /conversation/start/");
@@ -292,10 +292,10 @@ protected function fatalChecks()
 	$errors = array();
 
 	// Make sure the installer is not locked.
-	if ($this->controllerMethod != "finish" and C("esoTalk.installed")) $errors[] = T("message.esoTalkAlreadyInstalled");
+	if (C("esoTalk.installed")) $errors[] = T("message.esoTalkAlreadyInstalled");
 
 	// Check the PHP version.
-	if (!version_compare(PHP_VERSION, "5.0.0", ">=")) $errors[] = T("message.greaterPHPVersionRequired");
+	if (!version_compare(PHP_VERSION, "5.3.0", ">=")) $errors[] = sprintf(T("message.greaterPHPVersionRequired"), "5.3.0");
 
 	// Check for the MySQL extension.
 	if (!extension_loaded("mysql")) $errors[] = T("message.greaterMySQLVersionRequired");
