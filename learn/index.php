@@ -1,4 +1,4 @@
-<?
+<?php
 	require_once("../site/header.php");
 	require_once("learn_header.php");
 

@@ -1,4 +1,4 @@
-<?
+<?php
 	$body_type = "blue";
 	require_once("../site/header.php");
 ?>
@@ -33,6 +33,6 @@
 
 </div>
 
-<?
+<?php
 	require_once("../site/footer.php");
 ?>
