@@ -56,13 +56,14 @@
             <a href="/learn/networking" class="list-group-item">Networking basics</a>
             <a href="/learn/reliable_packets" class="list-group-item">Reliable packets</a>
           </div>
+-->
 
 	<h4>Modules</h4>
 	<div class="list-group">
             <a href="/learn/ui" class="list-group-item">UI</a>
-            <a href="/learn/2d_physics" class="list-group-item">2D Physics</a>
-            <a href="/learn/3d_physics" class="list-group-item">3D Physics</a>
+            <!--<a href="/learn/2d_physics" class="list-group-item">2D Physics</a>
+            <a href="/learn/3d_physics" class="list-group-item">3D Physics</a> -->
           </div>
---!>
+
 	</div>
 	<div class="col-md-9">
