@@ -10,7 +10,7 @@
 	<li><a href="#setting">Setting textures to SceneMesh.</a></li>
 </ul>
 <h4 id="overview">Textures and images overview.</h4>
-<p>The <b>Texture</b> class is the main way that image textures are stored and manipulated in Polycode. There are a number of ways to create a texture, though all of them are done via the <b>MaterialManager</b>, which you can access via the CoreServices singleton (see <a href="/learn/core">Core and CoreServices</a>). Textures can be either loaded from file or created manually via an Image class or directly from memory data in C++.</p>
+<p>The <b>Texture</b> class is the main way that image textures are stored and manipulated in Polycode. There are a number of ways to create a texture, though all of them are done via the <b>MaterialManager</b>, which you can access via the CoreServices singleton <!--(see <a href="/learn/core">Core and CoreServices</a>)-->. Textures can be either loaded from file or created manually via an Image class or directly from memory data in C++.</p>
 <h4 id="loading">Loading textures from file.</h4>
 <p>The easiest way to create a texture from an image is to use the <b>createTextureFromFile</b> method and pass it the path to the image file you want to load. Polycode supports only the PNG file format.</p>
 <p>If you try to load the same image twice using createTextureFromFile into the same resource pool, it will not load the file again, and instead return the already loaded textures from that resource pool.</p>
@@ -21,9 +21,9 @@ Texture *texture = materialManager->createTextureFromFile("dummy.png", true, tru
 <div class="codeh">Lua</div>
 <pre><code class="prettyprint">texture = Services.MaterialManager:createTextureFromFile("dummy.png", true, true, Services.ResourceManager:getGlobalPool())
 </code></pre>
-The first argument is the path to the image that we are loading. The second argument is a boolean that defines whether this texture will clamp or repeat and the third argument is a boolean that controls whether mipmaps are created for this texture. The last argument (which you can skip in C++, but is required in Lua), is the resource pool to load the texture into, which we set to the defaul global resource pool (see <a href="/learn/resources">Resource management</a>) for more information on resource pools.
+The first argument is the path to the image that we are loading. The second argument is a boolean that defines whether this texture will clamp or repeat and the third argument is a boolean that controls whether mipmaps are created for this texture. The last argument (which you can skip in C++, but is required in Lua), is the resource pool to load the texture into, which we set to the defaul global resource pool <!--(see <a href="/learn/resources">Resource management</a>) for more information on resource pools-->.
 <h4 id="image">Creating via the Image class.</h4>
-<p>Polycode provides an <b>Image</b> class to create and manipulate image data in memory. It provides the ability to set individual pixels, copy image parts and otherwise manipulate image data. See the <a href="/docs/class_polycode_1_1_image.html">Image class documentation</a> for detailed Image functionality.</p>
+<p>Polycode provides an <b>Image</b> class to create and manipulate image data in memory. It provides the ability to set individual pixels, copy image parts and otherwise manipulate image data.<!-- See the <a href="/docs/class_polycode_1_1_image.html">Image class documentation</a> for detailed Image functionality.--></p>
 <p>Once you create an Image, you can use the createTextureFromImage method of the MaterialManager to create a texture from the image.</p>
 <div class="codeh">C++</div>
 <pre><code class="prettyprint">Image *customImage = new Image(16, 16, Image::IMAGE_RGBA);

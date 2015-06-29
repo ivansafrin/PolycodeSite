@@ -20,7 +20,7 @@
 
 </script>
 </head>
-<?
+<?php
 	if(!isset($body_type)) {
 		$body_type = "gray";
 	}

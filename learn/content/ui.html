@@ -1,0 +1,111 @@
+<div class="page-header">
+<h2>User Interface Module.</h2>
+</div>
+<p class="lead">The Polycode User Interface Module has many elements as windows, text input fields, check boxes, buttons, etc. It is completely written in Polycode and is used in the Polycode IDE.</p>
+<h4>Contents</h4>
+<ul>
+	<li><a href="#overview">UI overview.</a></li>
+	<li><a href="#basic">Creating a basic user interface.</a></li>
+	<li><a href="#windows">Using UIWindows and UITextInputs.</a></li>
+</ul>
+<h4 id="overview">UI overview.</h4>
+<p>All elements of the UI Module are based on the <b>UIElement</b> class which is just an <b>Entity</b> with some extra methods needed for the user interface. These methods are mainly for dragging, focusing and resizing the element.</p>
+<p>The elements in UI module are: 
+	<ul>
+		<li><b>UIRect</b></li>
+		<li><b>UIImage</b></li>
+		<li><b>UILabel</b> and <b>UIMultilineLabel</b></li>
+		<li><b>UIBox</b></li>
+		<li><b>UICheckBox</b></li>
+		<li><b>UIComboBox</b></li>
+		<li><b>UIButton</b> and <b>UIImageButton</b></li>
+		<li><b>UIScrollContainer</b></li>
+		<li><b>UIHScrollBar</b> and <b>UIVScrollbar</b></li>
+		<li><b>UIHSizer</b> and <b>UIVSizer</b></li>
+		<li><b>UITreeContainer</b> and <b>UITree</b>s</li>
+		<li><b>UITextInput</b></li>
+		<li><b>UIWindow</b></li>
+		<li><b>UIColorPicker</b></li>
+		<li><b>UIFileDialog</b></li>
+	</ul>
+</p>
+<h4 id="basic">Creating a basic user interface.</h4>
+<p>Before you can use any of the UI elements in C++ you have to link to the PolycodeUI library, include PolycodeUI.h and load an UITheme. Lua loads the default theme out-of-the-box. There are two UIThemes shipped with Polycode called <b>default</b> and <b>dark</b> in <b>Assets/UIThemes.pak</b>. You need to add the archive and then load the configuration file of your theme. For both themes there's also a retina version which you have to load manually when using a retina display. To choose a theme just replace the folder name <b>default</b> with <b>dark</b> or <b>default_retina</b> or <b>dark_retina</b> respectively. For C++ you have to copy the UIThemes.pak to your execution folder.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">CoreServices::getInstance()->getResourceManager()->addArchive("UIThemes.pak");
+CoreServices::getInstance()->getConfig()->loadConfig("Polycode", "UIThemes/default/theme.xml");
+</code></pre>
+To use the dark theme in Lua use this line:
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">Services.Config:loadConfig("Polycode", "UIThemes/dark/theme.xml")</code></pre>
+<p>Normally the User Interface elements are added to their own <b>Scene</b> as it needs to be in a <b>SCENE_2D_TOPLEFT</b> scene (see <a href="/learn/scenes#creating">Scene types</a>). This works just as you would add any other <b>Entity</b> to a <b>Scene</b>. To have your text rendered nicely and sharply and not a bit washy you also have to set the texture filtering mode to <b>TEX_FILTERING_NEAREST</b>.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">Services()->getRenderer()->setTextureFilteringMode(Renderer::TEX_FILTERING_NEAREST);
+Scene *scene = new Scene(Scene::SCENE_2D_TOPLEFT);
+UILabel *label = new UILabel("Hello, World!", 64, "sans", Label::ANTIALIAS_FULL);
+scene->addChild(label);
+</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">Services.Renderer:setTextureFilteringMode(Renderer.TEX_FILTERING_NEAREST)
+scene = Scene(Scene.SCENE_2D_TOPLEFT)
+label = UILabel("Hello, World!", 64, "sans", Label.ANTIALIAS_FULL)
+scene:addChild(label)</code></pre>
+<p>When the UI module was just for displaying text it was useless as a <b>SceneLabel</b> could do that job either - but the UI module also adds <b>UIButton</b>s and much more! Let's have a look how simple you can make use of a button:
+First we have to enable input event processing for the scene. Then we create a new <b>UIButton</b>, add it to our scene and add an <b>EventListener</b> to the button (see <a href="/learn/events.html">Events</a>).</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">scene->rootEntity.processInputEvents = true;
+UIButton* button = new UIButton("Press me!", 80);
+button->setPosition(5, 70);
+scene->addChild(button);
+button->addEventListener(this, UIEvent::CLICK_EVENT);
+</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">scene.rootEntity.processInputEvents = true
+button = UIButton("Press me!", 80)
+button:setPosition(5, 70)
+scene:addChild(button)
+button:addEventListener(nil, onButtonPress, UIEvent.CLICK_EVENT)</code></pre>
+<p>Let's assume that you have some options for your application and you want users to be able to just press return to apply the changes. Then you can use <b>addFocusChild</b> instead of <b>addChild</b>.</p>
+<h4 id="basic">Using UIWindows and UITextInputs.</h4>
+<p>As you have learned some basics now just let's go one step further: Using <b>UIWindow</b>s and <b>UITextInput</b>s. Firstly we create a window specifying the caption and size of the window. Then we add the window as usually to our scene. Now we have a simple draggable and closable window. To (re-)show the window in the code use <b>showWindow</b> - to hide use <b>hideWindow</b>.</p>
+<p>We can add some stuff to the window as well. Let's add a <b>UILabel</b>, a <b>UITextInput</b> and a <b>UIButton</b>. To get the <b>UITextInput</b> working all-right, we have to initialize some static variables from SceneLabel. To achieve the best results we set the position of the elements in the window to the padding of the window.</p>
+<div class="codeh">C++</div>
+<pre><code class="prettyprint">SceneLabel::defaultAnchor = Vector3(-1.0, -1.0, 0.0);
+SceneLabel::defaultPositionAtBaseline = true;
+SceneLabel::defaultSnapToPixels = true;
+SceneLabel::createMipmapsForLabels = false;
+
+UIWindow *window = new UIWindow("Who are you?", 200, 200);
+scene->addChild(window);
+
+UILabel *name = new UILabel("Enter your Name:", 14, "sans", Label::ANTIALIAS_FULL);
+name->setPosition(window->padding, window->topPadding);
+window->addChild(name);
+
+UITextInput *nameInput = new UITextInput(false, 180, 12);
+nameInput->setPosition(window->padding, window->topPadding + 18);
+window->addChild(nameInput);
+
+UIButton *okButton = new UIButton("OK!", 40);
+okButton->setPosition(window->padding, window->topPadding + 45);
+window->addChild(okButton);</code></pre>
+<div class="codeh">Lua</div>
+<pre><code class="prettyprint">SceneLabel.defaultAnchor = Vector3(-1.0, -1.0, 0.0)
+SceneLabel.defaultPositionAtBaseline = true
+SceneLabel.defaultSnapToPixels = true
+SceneLabel.createMipmapsForLabels = false
+
+window = UIWindow("Who are you?", 200, 200)
+scene:addChild(window)
+
+name = UILabel("Enter your Name:", 14, "sans", Label.ANTIALIAS_FULL)
+name:setPosition(window.padding, window.topPadding)
+window:addChild(name)
+
+nameInput = UITextInput(false, 180, 12)
+nameInput:setPosition(window.padding, window.topPadding+18)
+window:addChild(nameInput)
+
+okButton = UIButton("OK!", 40)
+okButton:setPosition(window.padding, window.topPadding+45)
+window:addChild(okButton)</code></pre>

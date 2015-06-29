@@ -1,4 +1,4 @@
-<?
+<?php
 $body_type = "blue";
 require_once("site/header.php");
 ?>
@@ -7,6 +7,6 @@ require_once("site/header.php");
 		<p class="lead">Polycode is a C++ and Lua framework for building interactive applications. It is free, open source and cross-platform.</p>
 		<p><a style="margin-top: 50px; margin-bottom: 200px" class="btn btn-lg btn-info" href="/features" role="button">Learn more</a></p>
 	</div >
-<?
+<?php
 require_once("site/footer.php");
 ?>
